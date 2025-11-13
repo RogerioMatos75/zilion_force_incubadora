@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // As submissões só podem ser carregadas para um caminho que corresponda ao UID do usuário.
+    // Isso impede que os usuários sobrescrevam os arquivos uns dos outros.
+    match /submissions/{userId}/{fileName} {
+      // Permitir escrita (criação) somente se:
+      // 1. O usuário estiver autenticado.
+      // 2. O ID do usuário no caminho corresponder ao ID do usuário autenticado.
+      // 3. O tamanho do arquivo for menor que 10MB.
+      // 4. O arquivo for um PDF ou uma imagem.
+      allow create: if request.auth != null && request.auth.uid == userId
+                      && request.resource.size < 10 * 1024 * 1024
+                      && request.resource.contentType.matches('application/pdf|image/.*');
+
+      // Permitir leitura apenas por usuários autenticados (admins precisarão disso).
+      // Podemos refinar isso mais tarde para ser apenas para administradores.
+      allow read: if request.auth != null;
+    }
+  }
+}
