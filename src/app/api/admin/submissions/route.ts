@@ -4,8 +4,8 @@ import { verifyAdmin, AuthError } from '@/lib/auth/admin';
 
 export async function GET(request: NextRequest) {
   try {
-    // Verifica se o usuário é um membro da Diretoria autenticado
-    await verifyAdmin(request);
+    // A verificação de admin já foi feita pelo middleware.
+    // A rota agora só precisa executar sua lógica de negócio.
 
     const submissionsRef = adminDb.collection('submissions');
     const snapshot = await submissionsRef.orderBy('submissionDate', 'desc').get();
@@ -27,10 +27,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(submissions, { status: 200 });
 
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: error.message }, { status: 401 }); // Unauthorized
-    }
-    
+    // Removemos o `if (error instanceof AuthError)` pois o middleware já cuida disso.
     console.error('Erro ao buscar submissões:', error);
     return NextResponse.json({ error: 'Falha ao buscar dados.' }, { status: 500 });
   }

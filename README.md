@@ -199,10 +199,10 @@ Onde encontrar suas credenciais:
     - [ ] **9.1.2:** Modificar o fluxo de login do painel de admin (`/admin/login`) para exigir a verificação do segundo fator após a senha ser validada.
     - [ ] **9.1.3:** Realizar um teste de ponta-a-ponta: criar um usuário admin, habilitar o MFA e garantir que o login só é bem-sucedido após a verificação do segundo fator.
 
-- [ ] **9.2: Fortalecer Controle de Acesso (RBAC) com Custom Claims**
-    - [ ] **9.2.1:** Criar um script ou Cloud Function para atribuir "claims" (papéis como `admin` ou `avaliador`) a usuários específicos do Firebase.
-    - [ ] **9.2.2:** Atualizar as API Routes do admin para verificar esses "claims" no token do usuário, bloqueando o acesso se o papel não for o correto.
-    - [ ] **9.2.3:** Realizar um teste de segurança: tentar acessar uma API de admin com um token de usuário comum (criador) e confirmar que o acesso é negado (erro 403 Forbidden).
+- [x] **9.2: Fortalecer Controle de Acesso (RBAC) com Custom Claims**
+    - [x] **9.2.1:** Criar um script ou Cloud Function para atribuir "claims" (papéis como `admin` ou `avaliador`) a usuários específicos do Firebase.
+    - [x] **9.2.2:** Atualizar as API Routes do admin para verificar esses "claims" no token do usuário, bloqueando o acesso se o papel não for o correto. *(Nota: A verificação foi centralizada no middleware, tornando-a desnecessária nas rotas individuais).*
+    - [x] **9.2.3:** Realizar um teste de segurança: tentar acessar uma API de admin com um token de usuário comum (criador) e confirmar que o acesso é negado (erro 403 Forbidden).
 
 - [ ] **9.3: Validação de Mitigações de Risco**
     - [ ] **9.3.1:** Confirmar nas configurações do Firebase que a proteção contra enumeração de e-mail e "rate limiting" para login estão ativas (padrão do Identity Platform).
@@ -215,7 +215,7 @@ Onde encontrar suas credenciais:
 
 ### Fase 10: Depuração Urgente do Middleware (Amanhã)
 
-- [ ] **10.1:** Reativar o `console.error` no arquivo `src/middleware.ts` para capturar o log de erro do servidor.
-- [ ] **10.2:** Executar o teste de segurança novamente com o usuário `criador@teste.com`.
-- [ ] **10.3:** Analisar o log de erro que aparecerá no **terminal** do `npm run dev` para diagnosticar a causa raiz do erro 500.
-- [ ] **10.4:** Aplicar a correção com base no diagnóstico.
+- [x] **10.1:** Reativar o `console.error` no arquivo `src/middleware.ts` para capturar o log de erro do servidor.
+- [x] **10.2:** Executar o teste de segurança novamente com o usuário `criador@teste.com`.
+- [x] **10.3:** Analisar o log de erro que aparecerá no **terminal** do `npm run dev` para diagnosticar a causa raiz do erro 500.
+- [x] **10.4:** Aplicar a correção com base no diagnóstico.

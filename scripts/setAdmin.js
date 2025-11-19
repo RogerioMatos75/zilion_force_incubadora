@@ -1,59 +1,59 @@
+// Importa as bibliotecas necessárias
 const admin = require('firebase-admin');
+const dotenv = require('dotenv');
 
-// --- INSTRUÇÕES DE USO ---
-// 1. Baixe o arquivo de credenciais da sua conta de serviço no Console do Firebase.
-//    (Configurações do Projeto > Contas de Serviço > Gerar nova chave privada)
-// 2. Salve o conteúdo do JSON na variável FIREBASE_SERVICE_ACCOUNT_KEY no seu arquivo .env.local.
-//    O conteúdo deve ser uma string única (ex: FIREBASE_SERVICE_ACCOUNT_KEY='{"type": "service_account", ...}').
-// 3. Rode o script no terminal, passando o e-mail do usuário como argumento:
-//    node -r dotenv/config ./scripts/setAdmin.js seu-email@exemplo.com dotenv_config_path=./.env.local
-// -------------------------
+// Carrega as variáveis de ambiente do arquivo .env.local
+dotenv.config({ path: './.env.local' });
 
-// Inicializa o app admin do Firebase
-try {
-  // Carrega as variáveis de ambiente do .env.local
-  require('dotenv').config({ path: './.env.local' });
+// Monta o objeto de credenciais da conta de serviço a partir das variáveis de ambiente
+const serviceAccount = {
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  // Garante que a chave privada seja formatada corretamente
+  privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+};
 
-  if (!process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-    throw new Error('A variável de ambiente FIREBASE_SERVICE_ACCOUNT_KEY não está definida.');
-  }
-
+// Inicializa o app do Firebase Admin, se ainda não foi inicializado
+if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY))
+    credential: admin.credential.cert(serviceAccount),
   });
-  console.log("Firebase Admin SDK inicializado.");
-} catch (error) {
-  console.error("Erro ao inicializar Firebase Admin SDK:", error.message);
-  process.exit(1);
 }
 
+// Pega o e-mail do primeiro argumento da linha de comando
 const email = process.argv[2];
 
+// Verifica se o e-mail foi fornecido
 if (!email) {
-  console.error('ERRO: Forneça um e-mail como argumento.');
-  console.log('Uso: node -r dotenv/config ./scripts/setAdmin.js <email_do_usuario> dotenv_config_path=./.env.local');
+  console.error('ERRO: Forneça um endereço de e-mail como argumento.');
+  console.log('Uso: node scripts/setAdmin.js seu-email@exemplo.com');
   process.exit(1);
 }
 
+/**
+ * Atribui o papel de admin a um usuário pelo e-mail.
+ * @param {string} email O e-mail do usuário a ser promovido.
+ */
 async function setAdminRole(email) {
   try {
-    console.log(`Procurando usuário: ${email}`);
+    // Busca o usuário pelo e-mail
     const user = await admin.auth().getUserByEmail(email);
     
-    if (user.customClaims && user.customClaims.role === 'admin') {
-      console.log(`O usuário ${email} já é um admin.`);
-      return;
-    }
-
-    console.log(`Atribuindo a função 'admin' para ${user.uid}...`);
+    // Define o custom claim 'role' como 'admin'
     await admin.auth().setCustomUserClaims(user.uid, { role: 'admin' });
     
-    console.log(`Sucesso! O usuário ${email} agora é um administrador.`);
-    console.log("Observação: O usuário precisa fazer login novamente para que a alteração tenha efeito.");
+    console.log(`SUCESSO: O usuário ${email} (UID: ${user.uid}) agora é um administrador.`);
+    console.log('Lembre-se: O usuário precisa fazer logout e login novamente para que a mudança tenha efeito.');
 
   } catch (error) {
-    console.error('Ocorreu um erro:', error.message);
+    if (error.code === 'auth/user-not-found') {
+      console.error(`ERRO: Nenhum usuário encontrado com o e-mail: ${email}`);
+    } else {
+      console.error('Ocorreu um erro inesperado:', error);
+    }
+    process.exit(1);
   }
 }
 
-setAdminRole(email).then(() => process.exit(0));
+// Executa a função
+setAdminRole(email);
