@@ -1,6 +1,53 @@
-# Zilion Force Incubadora - Checklist de Desenvolvimento do MVP (Stack Firebase)
+# Zilion Force Incubadora - Plano de Desenvolvimento do MVP
 
-Este documento detalha as tarefas para a construção do Mínimo Produto Viável (MVP), focado em validar o fluxo de submissão e avaliação de Propriedade Intelectual (PI), utilizando o ecossistema Firebase.
+Este documento é o plano de ação consolidado para o MVP, baseado nos artefatos de requisitos e prototipação, utilizando a stack Next.js e Firebase.
+
+---
+
+## Rodando o Projeto Localmente
+
+1.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
+
+2.  **Configure as Variáveis de Ambiente:**
+    - Copie o arquivo `.env.example` para um novo arquivo chamado `.env.local`.
+    - Preencha as variáveis em `.env.local` com as credenciais do seu projeto Firebase.
+
+3.  **Rode o Servidor de Desenvolvimento:**
+    ```bash
+    npm run dev
+    ```
+
+4.  **Acesse a Aplicação:**
+    - Abra seu navegador e acesse [http://localhost:3000](http://localhost:3000).
+    - http://localhost:3000/submeter
+    - http://localhost:3000/admin/login
+    - http://localhost:3000/admin
+    - http://localhost:3000/test-security
+    - 
+
+---
+
+### Fase 0: Alinhamento Arquitetural (Baseado no Artefato 03)
+
+- [x] **0.1:** Refatorar Schema do Firestore para Suporte ao Ciclo de Vida CERNE.
+    - [x] **0.1.1:** Redefinir a coleção `submissions` para incluir um campo de `etapaCerne` (ex: 'pré-incubação', 'incubação', 'pós-incubação') e metadados associados, substituindo o campo `status` simplificado.
+    - [x] **0.1.2:** Garantir que a estrutura de dados suporte o armazenamento de todos os documentos necessários (HQ, Portfólio, Comprovante de PI) de forma clara e vinculada à submissão.
+
+- [x] **0.2:** Implementar a Lógica de Negócio do "Crivo do Atlas 1" no Backend.
+    - [x] **0.2.1:** Na API Route de submissão, implementar a validação obrigatória do comprovante de registro de PI como a primeira etapa do processamento.
+    - [x] **0.2.2:** Implementar a regra de exceção: se o comprovante for ausente ou inválido, a submissão deve ser salva com um status específico (ex: `naoElegivel_piPendente`) e não deve prosseguir no fluxo de avaliação.
+    - [x] **0.2.3:** Conectar esta validação ao serviço de e-mail para notificar o criador sobre a pendência, conforme a "Exceção 1".
+
+- [x] **0.3:** Garantir Rastreabilidade Legal dos Termos de Envio.
+    - [x] **0.3.1:** Adicionar campos na coleção `submissions` para registrar a aceitação dos Termos de Envio (ex: `termosAceitos: boolean`, `dataAceiteTermos: timestamp`, `versaoTermos: string`).
+    - [x] **0.3.2:** Tornar a validação desse aceite obrigatória na API Route de submissão.
+
+- [x] **0.4:** Fortalecer a Validação de Dados Dupla (Client/Server).
+    - [x] **0.4.1:** Revisar o formulário de submissão no frontend para garantir que todos os campos críticos definidos na "Regra 4" sejam mandatórios.
+    *   [x] **0.4.2:** Garantir que a mesma validação de campos críticos seja replicada no backend para integridade dos dados.
 
 ---
 
@@ -15,7 +62,7 @@ Este documento detalha as tarefas para a construção do Mínimo Produto Viável
 ### Fase 2: Backend - Lógica com Firebase
 
 - [x] **2.1:** Definir a estrutura de coleções no **Firestore**: `users` (para os Archons/Admins) e `submissions`.
-- [ ] **2.2:** Configurar o **Firebase Storage** e suas regras de segurança para permitir uploads de arquivos por usuários autenticados.
+- [x] **2.2:** Configurar o **Firebase Storage** e suas regras de segurança para permitir uploads de arquivos por usuários autenticados.
 - [x] **2.3:** Implementar a lógica de submissão no Frontend:
     - [x] **2.3.1:** Validar os dados do formulário (sinopse, gênero, etc.).
     - [x] **2.3.2:** Fazer o upload do arquivo de PI diretamente para o **Firebase Storage**.
@@ -28,9 +75,9 @@ Este documento detalha as tarefas para a construção do Mínimo Produto Viável
 
 ### Fase 3: Frontend - A Porta para o Criador
 
-- [ ] **3.1:** Criar as páginas estáticas principais (design responsivo *mobile-first*):
-    - [ ] **3.1.1:** Homepage (`/`) com a proposta de valor da incubadora.
-    - [ ] **3.1.2:** Página de Critérios de Seleção (`/criterios`).
+- [x] **3.1:** Criar as páginas estáticas principais (design responsivo *mobile-first*):
+    - [x] **3.1.1:** Homepage (`/`) com a proposta de valor da incubadora.
+    - [x] **3.1.2:** Página de Critérios de Seleção (`/criterios`).
 - [x] **3.2:** Desenvolver o "Formulário de Submissão Robusto" (`/submeter`):
     - [x] **3.2.1:** Criar os campos do formulário com validação no lado do cliente.
     - [x] **3.2.2:** Implementar o componente de upload de arquivo que utiliza o SDK do Firebase para o upload seguro.
@@ -53,17 +100,34 @@ Este documento detalha as tarefas para a construção do Mínimo Produto Viável
 
 ---
 
+### Fase 5: Fortalecimento e Integrações (Novas Tarefas)
+
+- [x] **5.1:** Implementar e aplicar as **Regras de Segurança no Firestore** para garantir que apenas administradores autenticados possam acessar e modificar os dados das submissões.
+- [x] **5.2:** Adicionar **verificação de token de autenticação** nas API Routes do admin para reforçar a segurança.
+- [x] **5.3:** Integrar um serviço de **e-mail transacional** (ex: SendGrid) para enviar uma confirmação automática ao criador após a submissão do projeto.
+- [ ] **5.4:** (Opcional) Adicionar um sistema de **análise web** (ex: Google Analytics 4) para monitorar o tráfego.
+
+---
+
+### Fase 6: Portal do Criador (Evolução do MVP)
+
+- [x] **6.1:** Implementar sistema de **Registro e Login para Criadores** (e-mail/senha e/ou provedores sociais).
+- [ ] **6.2:** Desenvolver o **Dashboard do Criador**, uma área logada onde o usuário pode ver seus projetos submetidos e o status de cada um.
+- [x] **6.3:** Refatorar as **Regras de Segurança** do Firestore e Storage para permitir que um criador acesse apenas seus próprios dados.
+
+---
+
 ### Anexo A: Estrutura do Banco de Dados (Firestore)
 
 Esta seção detalha a estrutura de dados para as coleções no Firestore, conforme a tarefa **2.1**.
 
 #### Coleção: `users`
-*   **Descrição:** Armazena os dados dos usuários administradores (Archons) que podem acessar o painel.
+*   **Descrição:** Armazena os dados dos usuários administradores (Diretoria) que podem acessar o painel.
 *   **Campos:**
     *   `uid` (string): O ID do usuário do Firebase Authentication.
     *   `email` (string): O email de login do usuário.
     *   `displayName` (string): Nome de exibição do usuário.
-    *   `role` (string): Papel do usuário, fixo como `"archon"`.
+    *   `role` (string): Papel do usuário (ex: `"Diretoria"`, `"creator"`).
 
 #### Coleção: `submissions`
 *   **Descrição:** Armazena os dados de cada projeto de HQ submetido na plataforma.
@@ -77,3 +141,81 @@ Esta seção detalha a estrutura de dados para as coleções no Firestore, confo
     *   `ipDocumentUrl` (string): URL para o arquivo de comprovação de PI no Firebase Storage.
     *   `submissionDate` (timestamp): Data e hora da submissão.
     *   `status` (string): Status atual do projeto (ex: `"pending"`, `"review"`, `"approved"`, `"rejected"`).
+   
+
+Onde encontrar suas credenciais:
+   * Vá para o console do Firebase (https://console.firebase.google.com/).
+   * Abra seu projeto.
+   * Clique no ícone de engrenagem ⚙️ ao lado de "Visão geral do projeto" e selecione Configurações do projeto.
+   * Na aba "Geral", role para baixo até "Seus apps".
+   * Selecione seu aplicativo da web.
+   * Você verá a seção "Snippet do SDK do Firebase". Escolha a opção Config. As chaves estarão lá.
+
+---
+
+### Fase 7: Backend de Submissão (Artefato 04)
+
+- [x] **7.1:** Implementar Endpoint de Submissão (`POST /api/submissions`).
+    - [x] **7.1.1:** Adicionar validação no backend para campos críticos e aceite obrigatório dos Termos de Envio.
+    - [x] **7.1.2:** Garantir que a submissão falhe se os termos não forem aceitos, retornando erro apropriado.
+- [x] **7.2:** Implementar Geração do "Protocolo Atlas".
+    - [x] **7.2.1:** Criar uma função para gerar um ID de protocolo único (ex: `ZF-INC-2025-10-XYZ`).
+    - [x] **7.2.2:** Salvar o protocolo junto com os dados da submissão no Firestore, com status inicial `recebido`.
+- [x] **7.3:** Orquestrar Resposta da API.
+    - [x] **7.3.1:** Em caso de sucesso, retornar o `Protocolo Atlas` gerado para o frontend.
+    - [x] **7.3.2:** Em caso de falha, retornar uma mensagem de erro clara.
+- [x] **7.4:** Implementar Notificação de Confirmação.
+    - [x] **7.4.1:** Disparar e-mail de confirmação para o criador, contendo o `Protocolo Atlas`.
+    - [x] **7.4.2:** Disparar e-mail de notificação para o administrador da incubadora.
+
+---
+
+### Fase 8: Frontend do MVP (Artefato 05)
+
+- [x] **8.1: Estrutura Base e Identidade (Must-Have)**
+    - [x] **8.1.1:** Desenvolver a Home Page (`/`) com a proposta de valor da incubadora.
+    - [x] **8.1.2:** Implementar a navegação principal com links funcionais (Home, Incubadora, Contato, etc.).
+    - [x] **8.1.3:** Criar a página de Contato (`/contato`) com formulário e e-mail.
+
+- [x] **8.2: Finalização do Portal de Submissão (Must-Have)**
+    - [x] **8.2.1:** Criar a página de Critérios de Seleção (`/criterios`) detalhando a exigência do registro de PI.
+    - [x] **8.2.2:** Revisar o formulário em `/submeter` para garantir que todos os campos e uploads do artefato estão presentes e funcionais.
+    - [x] **8.2.3:** Implementar a tela de sucesso pós-submissão para exibir o **Protocolo Atlas** retornado pela API.
+
+- [x] **8.3: Páginas de Credibilidade e Vitrine (Should-Have)**
+    - [x] **8.3.1:** Criar a página "Como Funciona a Incubadora" com a estrutura para os programas.
+    - [x] **8.3.2:** Criar a página "Quem Somos" (`/sobre-nos`) com a estrutura para a equipe e mentores.
+    - [x] **8.3.3:** Criar a página "Projetos Incubados" (`/projetos`) com uma estrutura de vitrine.
+
+- [x] **8.4: Reavaliação de Escopo (Pós-MVP)**
+    - [x] **8.4.1:** Analisar e planejar a implementação do Portal do Criador (Login e Dashboard), conforme solicitado no artefato.
+
+---
+
+### Fase 9: Testes e Validação de Segurança (Firebase)
+
+- [ ] **9.1: Implementar Multi-Factor Authentication (MFA) para Administradores**
+    - [ ] **9.1.1:** Pesquisar e definir a estratégia para habilitar MFA (provavelmente via SMS ou TOTP com Cloud Functions) para os usuários do painel de administração no Firebase.
+    - [ ] **9.1.2:** Modificar o fluxo de login do painel de admin (`/admin/login`) para exigir a verificação do segundo fator após a senha ser validada.
+    - [ ] **9.1.3:** Realizar um teste de ponta-a-ponta: criar um usuário admin, habilitar o MFA e garantir que o login só é bem-sucedido após a verificação do segundo fator.
+
+- [ ] **9.2: Fortalecer Controle de Acesso (RBAC) com Custom Claims**
+    - [ ] **9.2.1:** Criar um script ou Cloud Function para atribuir "claims" (papéis como `admin` ou `avaliador`) a usuários específicos do Firebase.
+    - [ ] **9.2.2:** Atualizar as API Routes do admin para verificar esses "claims" no token do usuário, bloqueando o acesso se o papel não for o correto.
+    - [ ] **9.2.3:** Realizar um teste de segurança: tentar acessar uma API de admin com um token de usuário comum (criador) e confirmar que o acesso é negado (erro 403 Forbidden).
+
+- [ ] **9.3: Validação de Mitigações de Risco**
+    - [ ] **9.3.1:** Confirmar nas configurações do Firebase que a proteção contra enumeração de e-mail e "rate limiting" para login estão ativas (padrão do Identity Platform).
+    - [ ] **9.3.2:** Revisar o código que interage com o Firestore para garantir o uso de queries parametrizadas, prevenindo qualquer risco de injeção.
+
+- [ ] **9.4: Sincronização do README.md**
+    - [ ] **9.4.1:** Após a conclusão dos testes, marcar as tarefas pendentes da "Fase 4: Deploy e Validação" como concluídas, pois esta fase cobre os pontos de teste E2E.
+
+---
+
+### Fase 10: Depuração Urgente do Middleware (Amanhã)
+
+- [ ] **10.1:** Reativar o `console.error` no arquivo `src/middleware.ts` para capturar o log de erro do servidor.
+- [ ] **10.2:** Executar o teste de segurança novamente com o usuário `criador@teste.com`.
+- [ ] **10.3:** Analisar o log de erro que aparecerá no **terminal** do `npm run dev` para diagnosticar a causa raiz do erro 500.
+- [ ] **10.4:** Aplicar a correção com base no diagnóstico.

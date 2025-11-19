@@ -1,23 +1,45 @@
 'use client';
 
 import { useState } from 'react';
-import { db, storage } from '@/lib/firebase/clientApp';
+import { storage } from '@/lib/firebase/clientApp';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useAuth } from '@/context/AuthContext';
+import CreatorAuth from '@/components/auth/CreatorAuth';
 
-export default function SubmeterPage() {
-  const [file, setFile] = useState<File | null>(null);
+// Componente para o formulário
+const SubmissionForm = () => {
+  const { user } = useAuth();
+  // Estados para os arquivos
+  const [ipDocumentFile, setIpDocumentFile] = useState<File | null>(null);
+  const [hqSampleFile, setHqSampleFile] = useState<File | null>(null);
+  
+  // Estados para os checkboxes
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [originalityDeclared, setOriginalityDeclared] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  
+  // Estado para a tela de sucesso
+  const [submissionResult, setSubmissionResult] = useState<{ success: boolean; message: string; protocol: string; }>({ success: false, message: '', protocol: '' });
+
+  // Função para fazer upload de um arquivo e retornar a URL
+  const uploadFile = async (file: File, path: string): Promise<string> => {
+    const fileRef = ref(storage, path);
+    await uploadBytes(fileRef, file);
+    return getDownloadURL(fileRef);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setSuccess(false);
 
-    if (!file) {
-      setError('Por favor, selecione o documento de PI.');
+    if (!hqSampleFile) {
+      setError('A amostra da HQ (PDF) é obrigatória.');
+      return;
+    }
+    if (!termsAccepted || !originalityDeclared) {
+      setError('Você deve aceitar os Termos de Envio e declarar a originalidade da obra.');
       return;
     }
 
@@ -25,108 +47,117 @@ export default function SubmeterPage() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const hqTitle = formData.get('hqTitle') as string;
-      const creatorName = formData.get('creatorName') as string;
-      const synopsis = formData.get('synopsis') as string;
+      
+      // Upload dos arquivos em paralelo para mais eficiência
+      const uploadPromises: Promise<string | null>[] = [
+        hqSampleFile ? uploadFile(hqSampleFile, `submissions/${user!.uid}/${Date.now()}-${hqSampleFile.name}`) : Promise.resolve(null),
+        ipDocumentFile ? uploadFile(ipDocumentFile, `submissions/${user!.uid}/${Date.now()}-${ipDocumentFile.name}`) : Promise.resolve(null),
+      ];
+      const [hqSampleUrl, ipDocumentUrl] = await Promise.all(uploadPromises);
 
-      // 1. Upload do arquivo para o Firebase Storage
-      // Nota: A regra de segurança que escrevemos espera um ID de usuário.
-      // Como este formulário é público, usaremos um caminho mais simples por enquanto.
-      // As regras de segurança precisarão ser ajustadas para permitir esta escrita pública.
-      const fileRef = ref(storage, `submissions/${Date.now()}-${file.name}`);
-      const uploadResult = await uploadBytes(fileRef, file);
-      const downloadURL = await getDownloadURL(uploadResult.ref);
-
-      // 2. Salvar os dados da submissão no Firestore
-      await addDoc(collection(db, 'submissions'), {
-        creatorName,
-        hqTitle,
-        synopsis,
-        ipDocumentUrl: downloadURL,
-        submissionDate: serverTimestamp(),
-        status: 'pending',
+      const response = await fetch('/api/submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          creatorName: user!.displayName || user!.email!,
+          creatorEmail: user!.email!,
+          creatorUid: user!.uid,
+          hqTitle: formData.get('hqTitle') as string,
+          synopsis: formData.get('synopsis') as string,
+          genre: formData.get('genre') as string,
+          portfolioUrl: formData.get('portfolioUrl') as string,
+          hqSampleUrl,
+          ipDocumentUrl,
+          termsAccepted,
+          originalityDeclared,
+        }),
       });
 
-      setSuccess(true);
-      (e.target as HTMLFormElement).reset();
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Falha ao enviar submissão.');
 
-    } catch (err) {
-      console.error(err);
-      setError('Ocorreu um erro ao enviar o projeto. Por favor, tente novamente.');
+      setSubmissionResult({ success: true, message: result.message, protocol: result.protocoloAtlas });
+
+    } catch (err: any) {
+      setError(err.message || 'Ocorreu um erro ao enviar o projeto.');
     } finally {
       setLoading(false);
     }
   };
 
+  if (submissionResult.success) {
+    return (
+      <div className="text-center">
+        <h3 className="text-lg font-medium text-green-800">Submissão Recebida!</h3>
+        <p className="mt-2 text-sm text-gray-600">{submissionResult.message}</p>
+        <p className="mt-4 text-sm text-gray-800 font-bold">Protocolo Atlas: <span className="font-mono p-1 bg-gray-200 rounded">{submissionResult.protocol}</span></p>
+        <button onClick={() => window.location.reload()} className="mt-6 w-full flex justify-center py-2 px-4 border rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+          Enviar Outro Projeto
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Título, Sinopse, Gênero, Portfólio */}
+      <div>
+        <label htmlFor="hqTitle" className="block text-sm font-medium text-gray-700">Título da Obra</label>
+        <input id="hqTitle" name="hqTitle" type="text" required disabled={loading} className="mt-1 block w-full px-3 py-2 border rounded-md" />
+      </div>
+      <div>
+        <label htmlFor="synopsis" className="block text-sm font-medium text-gray-700">Sinopse</label>
+        <textarea id="synopsis" name="synopsis" rows={4} required disabled={loading} className="mt-1 block w-full px-3 py-2 border rounded-md" />
+      </div>
+      <div>
+        <label htmlFor="genre" className="block text-sm font-medium text-gray-700">Gênero</label>
+        <input id="genre" name="genre" type="text" required disabled={loading} className="mt-1 block w-full px-3 py-2 border rounded-md" />
+      </div>
+      <div>
+        <label htmlFor="portfolioUrl" className="block text-sm font-medium text-gray-700">Link do Portfólio</label>
+        <input id="portfolioUrl" name="portfolioUrl" type="url" disabled={loading} className="mt-1 block w-full px-3 py-2 border rounded-md" />
+      </div>
+      
+      {/* Uploads */}
+      <div>
+        <label htmlFor="hqSample" className="block text-sm font-medium text-gray-700">Amostra da HQ (PDF obrigatório)</label>
+        <input id="hqSample" name="hqSample" type="file" required accept=".pdf" onChange={(e) => setHqSampleFile(e.target.files ? e.target.files[0] : null)} className="mt-1 block w-full text-sm" />
+      </div>
+      <div>
+        <label htmlFor="ipDocument" className="block text-sm font-medium text-gray-700">Comprovante de PI (Opcional no 1º envio)</label>
+        <input id="ipDocument" name="ipDocument" type="file" accept=".pdf,.png,.jpg" onChange={(e) => setIpDocumentFile(e.target.files ? e.target.files[0] : null)} className="mt-1 block w-full text-sm" />
+      </div>
+
+      {/* Checkboxes */}
+      <div className="flex items-center"><input id="originality" type="checkbox" required checked={originalityDeclared} onChange={(e) => setOriginalityDeclared(e.target.checked)} className="h-4 w-4" /><label htmlFor="originality" className="ml-2 block text-sm">Declaro que esta obra é original.</label></div>
+      <div className="flex items-center"><input id="terms" type="checkbox" required checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} className="h-4 w-4" /><label htmlFor="terms" className="ml-2 block text-sm">Eu li e aceito os <a href="/termos" target="_blank" className="font-medium text-indigo-600">Termos de Envio</a>.</label></div>
+      
+      {error && <p className="text-sm text-red-600">{error}</p>}
+      <button type="submit" disabled={loading} className="w-full flex justify-center py-2 px-4 border rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400">{loading ? 'Enviando...' : 'Enviar Projeto'}</button>
+    </form>
+  );
+};
+
+// Componente principal da página
+export default function SubmeterPage() {
+  const { user, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return <div className="min-h-screen flex items-center justify-center"><p>Carregando...</p></div>;
+  }
+  if (!user) {
+    return <CreatorAuth />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-2xl">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Submeta seu Projeto de HQ
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Preencha os campos abaixo para iniciar o processo de incubação.
-        </p>
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Submeta seu Projeto de HQ</h2>
+        <p className="mt-2 text-center text-sm text-gray-600">Bem-vindo, {user.displayName || user.email}! Preencha os campos abaixo.</p>
       </div>
-
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-2xl">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {success ? (
-            <div className="text-center">
-              <h3 className="text-lg font-medium text-green-800">Projeto Enviado com Sucesso!</h3>
-              <p className="mt-2 text-sm text-gray-600">
-                Sua submissão foi recebida. Entraremos em contato em breve.
-              </p>
-              <button
-                onClick={() => setSuccess(false)}
-                className="mt-4 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Enviar Outro Projeto
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Campos do formulário... */}
-              <div>
-                <label htmlFor="creatorName" className="block text-sm font-medium text-gray-700">
-                  Seu Nome Completo
-                </label>
-                <div className="mt-1">
-                  <input id="creatorName" name="creatorName" type="text" required disabled={loading} className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50" />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="hqTitle" className="block text-sm font-medium text-gray-700">
-                  Título da Obra (HQ)
-                </label>
-                <div className="mt-1">
-                  <input id="hqTitle" name="hqTitle" type="text" required disabled={loading} className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50" />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="synopsis" className="block text-sm font-medium text-gray-700">
-                  Sinopse
-                </label>
-                <div className="mt-1">
-                  <textarea id="synopsis" name="synopsis" rows={4} required disabled={loading} className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50" />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="ipDocument" className="block text-sm font-medium text-gray-700">
-                  Documento de Comprovação de PI (PDF, PNG, JPG)
-                </label>
-                <div className="mt-1">
-                  <input id="ipDocument" name="ipDocument" type="file" required disabled={loading} accept=".pdf,.png,.jpg,.jpeg" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50" />
-                </div>
-              </div>
-              {error && <p className="text-sm text-red-600">{error}</p>}
-              <div>
-                <button type="submit" disabled={loading} className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400">
-                  {loading ? 'Enviando...' : 'Enviar Projeto'}
-                </button>
-              </div>
-            </form>
-          )}
+          <SubmissionForm />
         </div>
       </div>
     </div>

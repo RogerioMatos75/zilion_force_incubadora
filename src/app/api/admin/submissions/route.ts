@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { adminDb } from '@/lib/firebase/adminApp';
+import { verifyAdmin, AuthError } from '@/lib/auth/admin';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    // TODO: Adicionar verificação de token de autenticação para garantir que apenas admins possam acessar.
-    // Por enquanto, a rota está aberta para facilitar o desenvolvimento do frontend.
+    // Verifica se o usuário é um membro da Diretoria autenticado
+    await verifyAdmin(request);
 
     const submissionsRef = adminDb.collection('submissions');
     const snapshot = await submissionsRef.orderBy('submissionDate', 'desc').get();
@@ -26,6 +27,10 @@ export async function GET(request: Request) {
     return NextResponse.json(submissions, { status: 200 });
 
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 }); // Unauthorized
+    }
+    
     console.error('Erro ao buscar submissões:', error);
     return NextResponse.json({ error: 'Falha ao buscar dados.' }, { status: 500 });
   }

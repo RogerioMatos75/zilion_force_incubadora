@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Funções Auxiliares ---
+
+    // Verdadeiro se o usuário logado for um membro da Diretoria
+    function isDiretoria() {
+      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Diretoria';
+    }
+
+    // Verdadeiro se o usuário logado for o "dono" do documento
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+
+    // --- Regras das Coleções ---
+
+    // Coleção 'users': Armazena dados de admins e criadores
+    match /users/{userId} {
+      // Um usuário pode criar seu próprio perfil na coleção 'users' (essencial para o cadastro).
+      allow create: if isOwner(userId);
+
+      // Um usuário pode ler seus próprios dados. Membros da Diretoria podem ler todos.
+      allow read: if isOwner(userId) || isDiretoria();
+
+      // Apenas a Diretoria pode atualizar dados de usuários (ex: promover para Diretoria).
+      allow update: if isDiretoria();
+      
+      // Apenas a Diretoria pode deletar usuários.
+      allow delete: if isDiretoria();
+    }
+
+    // Coleção 'submissions': Armazena os projetos enviados
+    match /submissions/{submissionId} {
+      // Permite a criação de uma submissão se o usuário estiver logado
+      // e o campo 'creatorUid' no novo documento for o seu próprio ID.
+      allow create: if isOwner(request.resource.data.creatorUid);
+
+      // Apenas a Diretoria pode listar (ver todos), atualizar ou deletar submissões.
+      allow list, update, delete: if isDiretoria();
+
+      // Um criador pode ler (get) sua própria submissão.
+      // Um membro da Diretoria pode ler (get) qualquer submissão.
+      allow get: if isDiretoria() || (resource.data.creatorUid != null && isOwner(resource.data.creatorUid));
+    }
+  }
+}
