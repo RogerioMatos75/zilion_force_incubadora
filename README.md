@@ -26,7 +26,7 @@ Este documento é o plano de ação consolidado para o MVP, baseado nos artefato
     - http://localhost:3000/admin/login
     - http://localhost:3000/admin
     - http://localhost:3000/test-security
-    - 
+    - [http://localhost:3000/dashboard](http://localhost:3000/dashboard).
 
 ---
 
