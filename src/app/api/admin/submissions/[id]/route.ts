@@ -41,15 +41,20 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
     await verifyAdmin(request); // Protege a rota
 
     const { id } = context.params;
-    const { status } = await request.json();
+    // Extrai os novos campos do pipeline do corpo da requisição
+    const { etapaPipeline, feedbackAnalise, pontuacao } = await request.json();
 
     if (!id) {
       return NextResponse.json({ error: 'ID da submissão é obrigatório.' }, { status: 400 });
     }
 
-    const allowedStatus = ['pending', 'review', 'approved', 'rejected'];
-    if (!status || !allowedStatus.includes(status)) {
-      return NextResponse.json({ error: 'Status inválido.' }, { status: 400 });
+    // Valida a etapa do pipeline
+    const validStages = [
+      'recebido', 'analise_preliminar', 'mentoria_inicial', 'workshop_fundamentos', 
+      'validacao_mercado', 'incubacao_plena', 'pos_incubacao', 'rejeitado', 'graduado'
+    ];
+    if (!etapaPipeline || !validStages.includes(etapaPipeline)) {
+      return NextResponse.json({ error: 'Etapa do pipeline inválida.' }, { status: 400 });
     }
 
     const submissionRef = adminDb.collection('submissions').doc(id);
@@ -59,15 +64,40 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
       return NextResponse.json({ error: 'Submissão não encontrada.' }, { status: 404 });
     }
 
-    await submissionRef.update({ status: status });
+    // Cria o objeto de atualização apenas com os campos definidos
+    const updateData: { [key: string]: any } = {
+      etapaPipeline,
+      status: etapaPipeline, // Mantém o campo 'status' legado sincronizado
+    };
 
-    return NextResponse.json({ message: 'Status atualizado com sucesso.', id, status }, { status: 200 });
+    if (feedbackAnalise !== undefined) {
+      updateData.feedbackAnalise = feedbackAnalise;
+    }
+    if (pontuacao !== undefined && pontuacao !== '' && !isNaN(Number(pontuacao))) {
+      updateData.pontuacao = Number(pontuacao);
+    }
+
+    await submissionRef.update(updateData);
+    
+    // Após a atualização, busca o documento atualizado para retornar ao frontend
+    const updatedDoc = await submissionRef.get();
+    const updatedData = updatedDoc.data();
+    
+    // Garante a serialização correta de datas
+    const responseData = {
+      id: updatedDoc.id,
+      ...updatedData,
+      submissionDate: updatedData?.submissionDate.toDate().toISOString(),
+    };
+
+    return NextResponse.json(responseData, { status: 200 });
 
   } catch (error) {
     if (error instanceof AuthError) {
       return NextResponse.json({ error: error.message }, { status: 401 });
     }
-    console.error(`Erro ao atualizar status da submissão ${context.params.id}:`, error);
-    return NextResponse.json({ error: 'Falha ao atualizar status.' }, { status: 500 });
+    console.error(`Erro ao atualizar pipeline da submissão ${context.params.id}:`, error);
+    return NextResponse.json({ error: 'Falha ao atualizar o pipeline.' }, { status: 500 });
   }
 }
+

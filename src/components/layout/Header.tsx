@@ -45,8 +45,8 @@ const Header = () => {
               </button>
             </>
           ) : (
-            <Link href="/submeter" className="text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-md">
-              Login / Cadastro
+            <Link href="/login" className="text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-md">
+              Login
             </Link>
           )}
         </div>

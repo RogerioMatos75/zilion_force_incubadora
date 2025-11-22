@@ -27,7 +27,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     // Redireciona se o usuário não estiver logado
     if (!authLoading && !user) {
-      router.push('/admin/login');
+      router.push('/login');
       return;
     }
     
@@ -36,7 +36,17 @@ export default function AdminDashboardPage() {
       const fetchSubmissions = async () => {
         try {
           setDataLoading(true);
-          const response = await fetch('/api/admin/submissions');
+          
+          // Obter o token do usuário logado
+          const token = await user.getIdToken();
+
+          // Fazer a chamada à API incluindo o token de autorização
+          const response = await fetch('/api/admin/submissions', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          
           if (!response.ok) {
             throw new Error('Falha ao buscar dados da API.');
           }

@@ -23,7 +23,6 @@ Este documento é o plano de ação consolidado para o MVP, baseado nos artefato
 4.  **Acesse a Aplicação:**
     - Abra seu navegador e acesse [http://localhost:3000](http://localhost:3000).
     - http://localhost:3000/submeter
-    - http://localhost:3000/admin/login
     - http://localhost:3000/admin
     - http://localhost:3000/test-security
     - [http://localhost:3000/dashboard](http://localhost:3000/dashboard).
@@ -219,3 +218,35 @@ Onde encontrar suas credenciais:
 - [x] **10.2:** Executar o teste de segurança novamente com o usuário `criador@teste.com`.
 - [x] **10.3:** Analisar o log de erro que aparecerá no **terminal** do `npm run dev` para diagnosticar a causa raiz do erro 500.
 - [x] **10.4:** Aplicar a correção com base no diagnóstico.
+
+---
+
+### Fase 11: Implementação do Portal do Criador e Pipeline
+
+- [x] **11.1: Evolução do Modelo de Dados (Backend)**
+    - [x] **11.1.1:** Adicionar novos campos à coleção `submissions` no Firestore para suportar o pipeline (ex: `etapaPipeline`, `feedbackAnalise`, `pontuacao`).
+- [x] **11.2: Evolução do Painel de Administração (Admin)**
+    - [x] **11.2.1:** Analisar a página de detalhes da submissão (`/admin/submission/[id]`).
+    - [x] **11.2.2:** Implementar um componente na página de detalhes para visualizar e atualizar a `etapaPipeline` de um projeto.
+    - [x] **11.2.3:** Implementar campos na mesma página para que o administrador possa inserir `feedbackAnalise` e `pontuacao`.
+    - [x] **11.2.4:** Atualizar a API (`PUT /api/admin/submissions/[id]`) para salvar esses novos dados no Firestore.
+- [ ] **11.3: Evolução do Dashboard do Criador (Frontend)**
+    - [ ] **11.3.1:** Refatorar a página `/dashboard` para exibir a `etapaPipeline` atual de cada projeto em uma linha do tempo ou status detalhado.
+    - [ ] **11.3.2:** Criar uma área no dashboard para o criador visualizar o `feedbackAnalise` e a `pontuacao` deixados pelo administrador.
+- [ ] **11.4: Ferramentas de Comunicação (Pós-MVP)**
+    - [ ] **11.4.1:** Planejar a "Área de Reunião".
+    - [ ] **11.4.2:** Planejar o "Formulário de Dúvidas" (sistema de tickets/suporte).
+
+---
+
+### Fase 12: Login Unificado
+
+- [x] **12.1:** Criar a nova página de login unificada em `src/app/login/page.tsx`.
+- [x] **12.2:** Desenvolver o formulário de login (email/senha) nesta nova página.
+- [x] **12.3:** Criar um novo endpoint de API (ex: `/api/auth/login`) para lidar com o processo de login.
+    - [x] **12.3.1:** O endpoint usará o Firebase Auth para autenticar o usuário.
+    - [x] **12.3.2:** No backend, verificará o "papel" (custom claim) do usuário autenticado.
+    - [x] **12.3.3:** A API retornará para qual dashboard o usuário deve ser redirecionado (ex: `/admin` ou `/dashboard`).
+- [x] **12.4:** Implementar a lógica no frontend (`/login/page.tsx`) para chamar a nova API e fazer o redirecionamento.
+- [x] **12.5:** Atualizar o `Header.tsx` para que o botão "Login / Cadastro" aponte para a nova página `/login`.
+- [x] **12.6:** Remover ou redirecionar a página antiga de login do admin (`/admin/login`).
