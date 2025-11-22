@@ -1,15 +1,15 @@
 const teamMembers = [
   {
-    name: 'Rogério de Sucesso',
-    role: 'Fundador & Diretor Executivo',
-    bio: 'Especialista em Propriedade Intelectual e veterano do mercado de entretenimento, guiando a visão estratégica da incubadora.',
-    imageUrl: 'https://placehold.co/400x400/1f2937/9ca3af?text=Foto',
+    name: 'Rogerio Matos',
+    role: 'Idealizador do Universo Zilion Force Comics',
+    bio: 'Guiando a visão estratégica da incubadora, com especialidade em Propriedade Intelectual e entretenimento.',
+    imageUrl: 'https://placehold.co/400x400/1f2937/9ca3af?text=Rogerio',
   },
   {
-    name: 'Atlas, o Arconte',
-    role: 'Head de Curadoria e Análise',
+    name: 'Gilmar Santos',
+    role: 'Co-Fundador Administrativo',
     bio: 'Responsável pelo "Crivo do Atlas", garantindo que apenas os projetos com maior potencial de mercado e qualidade sejam selecionados.',
-    imageUrl: 'https://placehold.co/400x400/1f2937/9ca3af?text=Foto',
+    imageUrl: 'https://placehold.co/400x400/1f2937/9ca3af?text=Gilmar',
   },
 ];
 
