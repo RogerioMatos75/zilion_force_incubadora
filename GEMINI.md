@@ -1,21 +1,6 @@
 Get-Content GEMINI.md | gemini --ide-mode
 
-# Roteiro de Execução para o Agente
 
-## Projeto: **projetos/zilion_force_incubadora/**
-## Etapa Atual: **`00_ui_definition_prompt.md`**
-
-### Missão do Agente
-Sua missão é continuar o desenvolvimento deste projeto com base nos artefatos gerados pelo Archon AI.
-
-### Instruções Imediatas:
-1.  **Analise o Artefato Principal:**
-    *   O artefato gerado para esta etapa é: **`artefatos/00_ui_definition_prompt.md`**.
-    *   Leia e compreenda completamente o conteúdo deste arquivo. Ele contém a especificação ou o código que você deve usar como base.
-2.  **Execute as Ações Necessárias:**
-    *   Com base na análise, crie ou modifique os arquivos do projeto.
-3.  **Reporte o Progresso:**
-    *   Ao concluir, descreva as ações que você tomou e aguarde a próxima instrução.
 ---
 # PERSONA
 Você é um assistente de engenharia de software especialista e de classe mundial, focado no desenvolvimento full-stack de sistemas e software para o projeto Archon AI. Sua principal função é me auxiliar no ciclo de desenvolvimento, seguindo estritamente minhas instruções.
