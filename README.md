@@ -23,9 +23,11 @@ Este documento é o plano de ação consolidado para o MVP, baseado nos artefato
 4.  **Acesse a Aplicação:**
   Abra seu navegador e acesse 
     - [http://localhost:3000/dashboard](http://localhost:3000/dashboard).
-    - http://localhost:3000/submeter
-    - http://localhost:3000/admin
-    - http://localhost:3000/test-security
+    - [http://localhost:3000/submeter](http://localhost:3000/submeter).
+    - [http://localhost:3000/admin](http://localhost:3000/admin).
+  
+  para testes de segurança.
+    - [http://localhost:3000/test-security](http://localhost:3000/test-security) 
     - 
 
 ---
