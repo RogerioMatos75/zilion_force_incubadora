@@ -2,8 +2,29 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import React from 'react';
 
-const PhaseSection = ({ title, duration, focus, children, isOpen, onToggle }) => (
+// Tipos para as propriedades do PhaseSection
+type PhaseSectionProps = {
+  title: string;
+  duration: string;
+  focus: string;
+  children: React.ReactNode;
+  isOpen: boolean;
+  onToggle: () => void;
+};
+
+// Tipos para as propriedades do TimelineItem
+type TimelineItemProps = {
+  time: string;
+  title: string;
+  incubatorAction?: string; // O '?' indica que a propriedade é opcional
+  creatorAction?: string;
+  deliverable?: string;
+};
+
+
+const PhaseSection = ({ title, duration, focus, children, isOpen, onToggle }: PhaseSectionProps) => (
   <div className="mb-8 border border-gray-700 rounded-lg">
     <button
       onClick={onToggle}
@@ -29,7 +50,7 @@ const PhaseSection = ({ title, duration, focus, children, isOpen, onToggle }) =>
   </div>
 );
 
-const TimelineItem = ({ time, title, incubatorAction, creatorAction, deliverable }) => (
+const TimelineItem = ({ time, title, incubatorAction, creatorAction, deliverable }: TimelineItemProps) => (
   <div className="relative">
     <div className="absolute -left-10 w-4 h-4 bg-blue-500 rounded-full mt-1.5"></div>
     <p className="text-sm font-semibold text-blue-300">{time}</p>
@@ -41,9 +62,9 @@ const TimelineItem = ({ time, title, incubatorAction, creatorAction, deliverable
 );
 
 const PipelinePage = () => {
-  const [openSection, setOpenSection] = useState('fase0');
+  const [openSection, setOpenSection] = useState<string | null>('fase0');
 
-  const handleToggle = (section) => {
+  const handleToggle = (section: string) => {
     setOpenSection(openSection === section ? null : section);
   };
 

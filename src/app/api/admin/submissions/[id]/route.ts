@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { adminDb } from '@/lib/firebase/adminApp';
 import { verifyAdmin, AuthError } from '@/lib/auth/admin';
 
-export async function GET(request: NextRequest, context: { params: { id: string } }) {
+export async function GET(request: NextRequest, context: { params: any }) {
   try {
     await verifyAdmin(request); // Protege a rota
 
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest, context: { params: { id: string 
   }
 }
 
-export async function PUT(request: NextRequest, context: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: any }) {
   try {
     await verifyAdmin(request); // Protege a rota
 
