@@ -1,6 +1,15 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import ContactForm from "@/components/contato/ContactForm";
 
 const ContactPage = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <div className="bg-gray-900 text-white min-h-screen">
       <main className="container mx-auto px-6 py-12">
@@ -14,9 +23,30 @@ const ContactPage = () => {
           <ContactForm />
           <div className="text-center mt-8">
             <p className="text-gray-400">Ou nos envie um e-mail diretamente em:</p>
-            <a href="mailto:admzilionforcecomics@gmail.com" className="text-blue-400 hover:underline">
-              admzilionforcecomics@gmail.com
-            </a>
+            {isClient ? (
+              <a href="mailto:admzilionforcecomics@gmail.com" className="text-blue-400 hover:underline">
+                admzilionforcecomics@gmail.com
+              </a>
+            ) : (
+              <div className="h-5 bg-gray-700 rounded-md w-48 mx-auto mt-1 animate-pulse"></div>
+            )}
+          </div>
+
+          <div className="text-center mt-6 pt-6 border-t border-gray-700">
+            <p className="text-gray-400">Se preferir, fale conosco pelo WhatsApp:</p>
+            {isClient ? (
+              <a 
+                href="https://wa.me/5511913613425" 
+                className="text-blue-400 hover:underline inline-flex items-center justify-center mt-2"
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 14.2c-.3-.1-1.8-1-2.1-1.1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.5 0s-1.4-.5-2.6-1.6c-1-1-1.6-2.1-1.8-2.5-.2-.3 0-.5.2-.7 0-.1.2-.3.4-.4.1-.1.2-.3.3-.4s.1-.2 0-.4c-.1-.2-1-2.4-1.3-3.3-.3-.8-.7-1.1-.9-1.1s-.5 0-.7 0h-.3c-.2 0-.5.2-.7.6 0 .4-.8 2-.8 4s.8 4.6 1 4.9c.1.3 1.7 2.5 4 3.6.6.3 1 .4 1.3.5.5.1 1 .1 1.3-.1.4-.2 1.2-.5 1.4-.9.2-.5.2-1 .1-1.1s-.2-.2-.5-.4zM12 2a10 10 0 100 20 10 10 0 000-20z"/></svg>
+                +55 11 91361-3425
+              </a>
+            ) : (
+              <div className="h-5 bg-gray-700 rounded-md w-40 mx-auto mt-1 animate-pulse"></div>
+            )}
           </div>
         </div>
       </main>

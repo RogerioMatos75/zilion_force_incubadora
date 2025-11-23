@@ -112,7 +112,7 @@ Este documento é o plano de ação consolidado para o MVP, baseado nos artefato
 ### Fase 6: Portal do Criador (Evolução do MVP)
 
 - [x] **6.1:** Implementar sistema de **Registro e Login para Criadores** (e-mail/senha e/ou provedores sociais).
-- [ ] **6.2:** Desenvolver o **Dashboard do Criador**, uma área logada onde o usuário pode ver seus projetos submetidos e o status de cada um.
+- [x] **6.2:** Desenvolver o **Dashboard do Criador**, uma área logada onde o usuário pode ver seus projetos submetidos e o status de cada um.
 - [x] **6.3:** Refatorar as **Regras de Segurança** do Firestore e Storage para permitir que um criador acesse apenas seus próprios dados.
 
 ---
