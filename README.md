@@ -82,6 +82,52 @@ O projeto utiliza Jest e React Testing Library para testes de funcionalidade.
 
 ---
 
+## Plano de Desenvolvimento - MVP v2.0
+
+Esta seção detalha as próximas etapas para a evolução da plataforma, com foco no Dashboard do Criador e na automação do fluxo de curadoria.
+
+### **Fase 1: Evolução do Backend e Modelo de Dados**
+- [ ] **1.1:** Atualizar o schema da coleção `submissions` no Firestore para incluir os novos campos necessários:
+    - [ ] `etapaPipeline` (array de objetos: `{ etapa: string, data: timestamp }`) para a timeline visual.
+    - [ ] `crivoDoAtlas` (objeto com booleans: `{ piValidado: false, criativoValidado: false, ... }`) para o checklist.
+    - [ ] `documentosAssinados` (array de objetos: `{ nome: string, url: string, data: timestamp }`).
+    - [ ] `feedbacks` (array de objetos: `{ autor: string, comentario: string, data: timestamp }`).
+    - [ ] `reunioes` (array de objetos: `{ tipo: 'mentoria' | 'workshop', data: timestamp, confirmado: boolean }`).
+    - [ ] `visivelInvestidor` (boolean).
+- [ ] **1.2:** Criar um script de "seed" (`/scripts/seed.js`) para popular o Firestore com dados de exemplo (1 usuário com role "criador" e 1 projeto em "Pré-Incubação").
+- [ ] **1.3:** Refatorar as Regras de Segurança do Firestore (`firestore.rules`) para implementar a lógica de acesso:
+    - [ ] Regra: `criador` só pode ler/escrever em seus próprios documentos.
+    - [ ] Regra: `curador` e `admin` podem ler/escrever em todos os documentos de submissão.
+    - [ ] Regra: Acesso de leitura para `investidor` condicionado ao campo `visivelInvestidor`.
+
+### **Fase 2: Lógica de Negócio e APIs**
+- [ ] **2.1:** Modificar a API de aprovação (`PUT /api/admin/submissions/[id]`) para que o `admin` possa:
+    - [ ] Atribuir a `role` "criador" a um usuário via Custom Claims.
+    - [ ] Disparar o e-mail de boas-vindas.
+- [ ] **2.2:** Criar novo endpoint `POST /api/creator/solicitar-reuniao` que cria um registro no Firestore.
+- [ ] **2.3:** Criar novo endpoint `POST /api/creator/upload-atualizacao` para lidar com o upload de novas versões de documentos no Storage.
+- [ ] **2.4:** Criar novo endpoint `GET /api/export-pdf/[submissionId]` para gerar o relatório do projeto.
+
+### **Fase 3: O Novo Dashboard do Criador (`/dashboard`)**
+- [ ] **3.1:** Aplicar o estilo "Dark mode neon Zilion Force" como base para o layout do dashboard.
+- [ ] **3.2:** Implementar o listener em tempo real (`onSnapshot`) na página do dashboard para receber atualizações de `feedbacks` e `status`.
+- [ ] **3.3:** Desenvolver o componente **"Meu Projeto"** com a timeline visual do pipeline CERNE.
+- [ ] **3.4:** Desenvolver o componente **"Minhas Submissões"** para listar o histórico de arquivos.
+- [ ] **3.5:** Desenvolver o componente **"Progresso no Crivo do Atlas"** (checklist read-only).
+- [ ] **3.6:** Desenvolver o componente **"Mentorias & Workshops"** com a agenda e o botão "Confirmar Presença".
+- [ ] **3.7:** Desenvolver o componente **"Documentos Assinados"** para visualização dos links.
+- [ ] **3.8:** Desenvolver o componente **"Feedback da Curadoria"** em formato de timeline.
+- [ ] **3.9:** Desenvolver o componente **"Upload de Atualizações"** com o formulário de upload.
+- [ ] **3.10:** Desenvolver o componente **"Métricas Pessoais"** para exibir deadlines.
+- [ ] **3.11:** Implementar a lógica do botão **"Solicitar Reunião"**.
+
+### **Fase 4: Finalização e Documentação**
+- [ ] **4.1:** Implementar o "Tour Guiado" no primeiro login do criador (pode ser um modal simples com as instruções).
+- [ ] **4.2:** Atualizar o `README.md` com uma nova seção explicando como um `admin` pode definir Custom Claims para os usuários via script.
+- [ ] **4.3:** Realizar um teste de ponta-a-ponta do novo fluxo: submissão -> aprovação -> login do criador -> visualização do dashboard.
+
+---
+
 ### Fase 0: Alinhamento Arquitetural (Baseado no Artefato 03)
 
 - [x] **0.1:** Refatorar Schema do Firestore para Suporte ao Ciclo de Vida CERNE.
