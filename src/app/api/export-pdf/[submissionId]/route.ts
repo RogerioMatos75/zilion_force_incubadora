@@ -27,7 +27,6 @@ export async function GET(request: NextRequest, context: { params: any }) {
     }
     const submissionData = doc.data();
 
-    // Verifica a permissão
     const isOwner = submissionData?.creatorUid === uid;
     const isAdminOrCurator = role === 'admin' || role === 'curador';
 
@@ -35,51 +34,60 @@ export async function GET(request: NextRequest, context: { params: any }) {
       return NextResponse.json({ error: 'Acesso negado.' }, { status: 403 });
     }
 
-    // 2. Criação do Documento PDF
+    // 2. Criação do Documento PDF (Lógica Refatorada)
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage();
-    const { width, height } = page.getSize();
+    let page = pdfDoc.addPage();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    
+    let y = page.getSize().height - 50;
 
-    let y = height - 50;
+    // Função auxiliar simples para verificar a necessidade de nova página
+    const checkPageBreak = () => {
+        if (y < 50) {
+            page = pdfDoc.addPage();
+            y = page.getSize().height - 50;
+        }
+    };
 
     // Título
-    page.drawText('Relatório de Projeto - Zilion Force Incubadora', {
-      x: 50,
-      y: y,
-      font: boldFont,
-      size: 18,
-      color: rgb(0, 0, 0),
-    });
+    page.drawText('Relatório de Projeto - Zilion Force Incubadora', { x: 50, y, font: boldFont, size: 18, color: rgb(0, 0, 0) });
     y -= 40;
 
-    // Função auxiliar para desenhar linhas de texto
-    const drawLine = (label: string, value: string, isTitle = false) => {
-        if (y < 50) { // Adiciona nova página se o espaço acabar
-            page = pdfDoc.addPage();
-            y = height - 50;
-        }
-        page.drawText(label, { x: 50, y, font: boldFont, size: 12 });
-        page.drawText(value || 'N/A', { x: 180, y, font, size: 12 });
-        y -= isTitle ? 25 : 20;
-    }
+    // --- Dados Principais ---
+    checkPageBreak();
+    page.drawText('Protocolo Atlas:', { x: 50, y, font: boldFont, size: 12 });
+    page.drawText(submissionData?.protocoloAtlas || 'N/A', { x: 180, y, font, size: 12 });
+    y -= 20;
 
-    drawLine('Protocolo Atlas:', submissionData?.protocoloAtlas);
-    drawLine('Título da Obra:', submissionData?.hqTitle);
-    drawLine('Criador:', submissionData?.creatorName);
-    drawLine('Email:', submissionData?.creatorEmail);
-    drawLine('Data de Submissão:', submissionData?.submissionDate.toDate().toLocaleDateString('pt-BR'));
-    y -= 10;
+    checkPageBreak();
+    page.drawText('Título da Obra:', { x: 50, y, font: boldFont, size: 12 });
+    page.drawText(submissionData?.hqTitle || 'N/A', { x: 180, y, font, size: 12 });
+    y -= 20;
     
-    // Status
+    checkPageBreak();
+    page.drawText('Criador:', { x: 50, y, font: boldFont, size: 12 });
+    page.drawText(submissionData?.creatorName || 'N/A', { x: 180, y, font, size: 12 });
+    y -= 20;
+    
+    checkPageBreak();
+    page.drawText('Data de Submissão:', { x: 50, y, font: boldFont, size: 12 });
+    page.drawText(submissionData?.submissionDate.toDate().toLocaleDateString('pt-BR') || 'N/A', { x: 180, y, font, size: 12 });
+    y -= 30;
+
+    // --- Status do Crivo do Atlas ---
+    checkPageBreak();
     page.drawText('Pipeline de Incubação (Crivo do Atlas)', { x: 50, y, font: boldFont, size: 14 });
     y -= 25;
 
     submissionData?.crivoDoAtlas.forEach((etapa: any) => {
-        const statusText = `[${etapa.status.toUpperCase()}] Pontuação: ${etapa.pontuacao}`;
-        drawLine(etapa.nome, statusText);
+        checkPageBreak();
+        const statusText = `[${etapa.status.toUpperCase()}] - Pontuação: ${etapa.pontuacao}`;
+        page.drawText(`- ${etapa.nome}`, { x: 50, y, font, size: 12 });
+        y -= 20;
     });
+    
+    y -= 10;
 
     // 3. Serializar o PDF e preparar a resposta
     const pdfBytes = await pdfDoc.save();
