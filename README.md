@@ -53,6 +53,7 @@ A tabela abaixo representa todas as páginas e rotas de API do projeto, mostrand
     npm run dev
     npm run build
     npm run test
+    npm run test
     ```
 
 4.  **Acesse a Aplicação:**
@@ -64,6 +65,20 @@ A tabela abaixo representa todas as páginas e rotas de API do projeto, mostrand
   para testes de segurança.
     - [http://localhost:3000/test-security](http://localhost:3000/test-security) 
     - 
+
+### Rodando os Testes
+
+O projeto utiliza Jest e React Testing Library para testes de funcionalidade.
+
+- Para rodar os testes em **modo de observação** (executa novamente ao salvar uma alteração):
+  ```bash
+  npm run test
+  ```
+
+- Para rodar **todos os testes uma única vez** (ideal para integração contínua):
+  ```bash
+  npm test -- --ci
+  ```
 
 ---
 
