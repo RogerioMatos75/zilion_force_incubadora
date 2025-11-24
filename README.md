@@ -8,7 +8,7 @@ Este documento é o plano de ação consolidado para o MVP, baseado nos artefato
 
 A tabela abaixo representa todas as páginas e rotas de API do projeto, mostrando como cada uma é renderizada pelo Next.js.
 
-```
+```bash
  Route (app) 
 ┌ ○ / 
 ├ ○ /_not-found 
@@ -52,6 +52,7 @@ A tabela abaixo representa todas as páginas e rotas de API do projeto, mostrand
     ```bash
     npm run dev
     npm run build
+    npm run test
     ```
 
 4.  **Acesse a Aplicação:**

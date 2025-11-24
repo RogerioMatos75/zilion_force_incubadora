@@ -11,7 +11,7 @@ type AuthContextType = {
   signOut: () => Promise<void>; 
 };
 
-const AuthContext = createContext<AuthContextType>({ 
+export const AuthContext = createContext<AuthContextType>({ 
   user: null, 
   loading: true,
   signOut: async () => {}, // Adiciona uma função padrão
