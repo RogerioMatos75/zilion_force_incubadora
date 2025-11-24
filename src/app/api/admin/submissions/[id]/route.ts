@@ -66,13 +66,17 @@ export async function PUT(request: NextRequest, context: { params: any }) {
       return NextResponse.json({ error: 'Submissão não encontrada.' }, { status: 404 });
     }
 
-    // --- LÓGICA DE ATRIBUIÇÃO DE ROLE v2.0 ---
+    // --- LÓGICA DE ATRIBUIÇÃO DE ROLE v2.1 (CORRIGIDA) ---
     const submissionData = doc.data();
     // Se a submissão tem um criador associado, verifique e promova-o se necessário.
     if (submissionData?.creatorUid) {
       const user = await adminAuth.getUser(submissionData.creatorUid);
-      // Apenas atribui a role se o usuário ainda não for um 'criador'.
-      if (user.customClaims?.role !== 'criador') {
+      const currentRole = user.customClaims?.role;
+
+      // CONDIÇÃO DE SEGURANÇA:
+      // Apenas atribui a role 'criador' se o usuário não tiver NENHUMA role pré-definida.
+      // Isso previne que um admin ou curador seja rebaixado para criador.
+      if (!currentRole) {
         await adminAuth.setCustomUserClaims(submissionData.creatorUid, { role: 'criador' });
         // TODO: (Tarefa Futura) Disparar e-mail de boas-vindas aqui.
       }
