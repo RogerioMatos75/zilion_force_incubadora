@@ -52,8 +52,6 @@ A tabela abaixo representa todas as páginas e rotas de API do projeto, mostrand
     ```bash
     npm run dev
     npm run build
-    npm run test
-    npm run test
     ```
 
 4.  **Acesse a Aplicação:**
@@ -98,22 +96,44 @@ Esta seção detalha as próximas etapas para a evolução da plataforma, com fo
 - [x] **2.4:** Criar novo endpoint `GET /api/export-pdf/[submissionId]` para gerar o relatório do projeto.
 
 ### **Fase 3: O Novo Dashboard do Criador (`/dashboard`)**
-- [ ] **3.1:** Aplicar o estilo "Dark mode neon Zilion Force" como base para o layout do dashboard.
-- [ ] **3.2:** Implementar o listener em tempo real (`onSnapshot`) na página do dashboard para receber atualizações de `feedbacks` e `status`.
-- [ ] **3.3:** Desenvolver o componente **"Meu Projeto"** com a timeline visual do pipeline CERNE.
-- [ ] **3.4:** Desenvolver o componente **"Minhas Submissões"** para listar o histórico de arquivos.
-- [ ] **3.5:** Desenvolver o componente **"Progresso no Crivo do Atlas"** (checklist read-only).
-- [ ] **3.6:** Desenvolver o componente **"Mentorias & Workshops"** com a agenda e o botão "Confirmar Presença".
+- [x] **3.1:** Aplicar o estilo "Dark mode neon Zilion Force" como base para o layout do dashboard.
+- [x] **3.2:** Implementar o listener em tempo real (`onSnapshot`) na página do dashboard para receber atualizações de `feedbacks` e `status`.
+- [x] **3.3:** Desenvolver o componente **"Meu Projeto"** com a timeline visual do pipeline CERNE.
+- [x] **3.4:** Desenvolver o componente **"Minhas Submissões"** para listar o histórico de arquivos.
+- [x] **3.5:** Desenvolver o componente **"Progresso no Crivo do Atlas"** (checklist read-only).
+- [x] **3.6:** Desenvolver o componente **"Mentorias & Workshops"** com a agenda e o botão "Confirmar Presença".
 - [ ] **3.7:** Desenvolver o componente **"Documentos Assinados"** para visualização dos links.
 - [ ] **3.8:** Desenvolver o componente **"Feedback da Curadoria"** em formato de timeline.
-- [ ] **3.9:** Desenvolver o componente **"Upload de Atualizações"** com o formulário de upload.
+- [x] **3.9:** Desenvolver o componente **"Upload de Atualizações"** com o formulário de upload.
 - [ ] **3.10:** Desenvolver o componente **"Métricas Pessoais"** para exibir deadlines.
 - [ ] **3.11:** Implementar a lógica do botão **"Solicitar Reunião"**.
 
 ### **Fase 4: Finalização e Documentação**
-- [ ] **4.1:** Implementar o "Tour Guiado" no primeiro login do criador (pode ser um modal simples com as instruções).
-- [ ] **4.2:** Atualizar o `README.md` com uma nova seção explicando como um `admin` pode definir Custom Claims para os usuários via script.
+- [x] **4.1:** Implementar o "Tour Guiado" no primeiro login do criador (pode ser um modal simples com as instruções).
+- [x] **4.2:** Atualizar o `README.md` com uma nova seção explicando como um `admin` pode definir Custom Claims para os usuários via script.
 - [ ] **4.3:** Realizar um teste de ponta-a-ponta do novo fluxo: submissão -> aprovação -> login do criador -> visualização do dashboard.
+
+---
+
+## 🔐 Administração e Segurança
+
+### Definindo Papéis de Usuário (Custom Claims)
+
+Para que um usuário tenha acesso ao Dashboard de Criador, ele precisa ter a claim `role: 'criador'`. Atualmente, isso deve ser feito via script administrativo ou console do Firebase.
+
+**Exemplo de Script (Node.js):**
+
+```javascript
+const admin = require('firebase-admin');
+// ... inicialização do admin ...
+
+async function setCreatorRole(uid) {
+  await admin.auth().setCustomUserClaims(uid, { role: 'criador' });
+  console.log(`Role 'criador' atribuída ao usuário ${uid}`);
+}
+```
+
+> **Nota:** O endpoint `/api/admin/submissions/[id]` já implementa essa lógica automaticamente ao aprovar uma submissão.
 
 ---
 

@@ -4,48 +4,34 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { db } from '@/lib/firebase/clientApp';
+import { collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
 
-// Definindo um tipo para as submissões para melhor type-safety
+// Importando todos os componentes do dashboard
+import MeuProjeto from '@/components/dashboard/MeuProjeto';
+import UploadForm from '@/components/dashboard/UploadForm';
+import MinhasSubmissoes from '@/components/dashboard/MinhasSubmissoes';
+import CrivoDoAtlas from '@/components/dashboard/CrivoDoAtlas';
+import MentoriasWorkshops from '@/components/dashboard/MentoriasWorkshops';
+import DocumentosAssinados from '@/components/dashboard/DocumentosAssinados';
+import FeedbackCuradoria from '@/components/dashboard/FeedbackCuradoria';
+import MetricasPessoais from '@/components/dashboard/MetricasPessoais';
+import SolicitarReuniao from '@/components/dashboard/SolicitarReuniao';
+import GuidedTour from '@/components/dashboard/GuidedTour';
+
+// Interface completa da Submissão, agora incluindo todos os campos
 interface Submission {
   id: string;
   hqTitle: string;
   statusDetalhado: string;
   submissionDate: string;
   protocoloAtlas: string;
+  etapaCerne: string;
+  etapaPipeline: any[];
+  fileHistory: any[];
+  crivoDoAtlas: any[];
+  reunioes: any[];
 }
-
-const TableSkeleton = () => (
-  <div className="overflow-x-auto">
-    <table className="min-w-full bg-white">
-      <thead className="bg-gray-100">
-        <tr>
-          <th className="text-left py-3 px-4 font-semibold text-sm">Título da HQ</th>
-          <th className="text-left py-3 px-4 font-semibold text-sm">Protocolo</th>
-          <th className="text-left py-3 px-4 font-semibold text-sm">Data de Envio</th>
-          <th className="text-center py-3 px-4 font-semibold text-sm">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {[...Array(3)].map((_, i) => (
-          <tr key={i} className="border-b animate-pulse">
-            <td className="py-3 px-4">
-              <div className="h-4 bg-gray-300 rounded w-5/6"></div>
-            </td>
-            <td className="py-3 px-4">
-              <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-            </td>
-            <td className="py-3 px-4">
-              <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-            </td>
-            <td className="py-3 px-4 text-center">
-              <div className="h-6 w-24 bg-gray-300 rounded-full mx-auto"></div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
 
 const DashboardPage = () => {
   const { user, loading } = useAuth();
@@ -55,167 +41,118 @@ const DashboardPage = () => {
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Efeito para proteger a rota
+  // Efeito para proteger a rota contra usuários não logados
   useEffect(() => {
     if (!loading && !user) {
       router.push('/');
     }
   }, [user, loading, router]);
 
-  // Efeito para buscar os dados do usuário
+  // Efeito para buscar os dados do usuário em tempo real
   useEffect(() => {
-    if (user) {
-      const fetchSubmissions = async () => {
-        setIsFetching(true);
-        setError(null);
-        try {
-          const token = await user.getIdToken();
-          const response = await fetch('/api/creator/submissions', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
+    if (!user) return;
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Falha ao buscar os projetos.');
-          }
+    setIsFetching(true);
+    const submissionsRef = collection(db, 'submissions');
+    const q = query(submissionsRef, where('creatorUid', '==', user.uid));
 
-          const data = await response.json();
-          setSubmissions(data);
-        } catch (err: any) {
-          console.error("Dashboard: Falha ao buscar submissões", err);
-          setError('Ocorreu um erro ao carregar seus projetos. Por favor, tente novamente mais tarde.');
-        } finally {
-          setIsFetching(false);
-        }
-      };
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const userSubmissions: Submission[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const submissionDate = data.submissionDate instanceof Timestamp 
+          ? data.submissionDate.toDate().toISOString() 
+          : new Date().toISOString();
 
-      fetchSubmissions();
-    }
-  }, [user]); // Roda sempre que o objeto user mudar
+        userSubmissions.push({
+          id: doc.id,
+          hqTitle: data.hqTitle || 'N/A',
+          statusDetalhado: data.statusDetalhado || 'N/A',
+          submissionDate: submissionDate,
+          protocoloAtlas: data.protocoloAtlas || 'N/A',
+          etapaCerne: data.etapaCerne || 'indefinido',
+          etapaPipeline: data.etapaPipeline || [],
+          fileHistory: data.fileHistory || [],
+          crivoDoAtlas: data.crivoDoAtlas || [],
+          reunioes: data.reunioes || [],
+        });
+      });
+      
+      setSubmissions(userSubmissions);
+      setIsFetching(false);
+      setError(null);
+    }, (err) => {
+      console.error("Dashboard: Erro no listener do Firestore:", err);
+      setError('Ocorreu um erro ao carregar seus projetos em tempo real.');
+      setIsFetching(false);
+    });
 
-  // Exibe uma mensagem de carregamento geral enquanto a autenticação é verificada
+    return () => unsubscribe();
+  }, [user]);
+
   if (loading || !user) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <p>Verificando autenticação...</p>
+      <div className="min-h-screen bg-zilion-bg flex items-center justify-center">
+        <div className="text-zilion-cyan animate-pulse text-xl font-bold">Carregando Zilion Force...</div>
       </div>
     );
   }
 
-  const renderContent = () => {
-    if (isFetching) {
-      return <p>Carregando projetos...</p>;
-    }
-    if (error) {
-      return <p className="text-red-500">Erro: {error}</p>;
-    }
-    if (submissions.length === 0) {
-      return <p>Você ainda não enviou nenhum projeto.</p>;
-    }
-    return (
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="text-left py-3 px-4 font-semibold text-sm">Título da HQ</th>
-              <th className="text-left py-3 px-4 font-semibold text-sm">Protocolo</th>
-              <th className="text-left py-3 px-4 font-semibold text-sm">Data de Envio</th>
-              <th className="text-center py-3 px-4 font-semibold text-sm">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {submissions.map((sub) => (
-              <tr key={sub.id} className="border-b hover:bg-gray-50">
-                <td className="py-3 px-4">{sub.hqTitle}</td>
-                <td className="py-3 px-4 font-mono text-xs">{sub.protocoloAtlas}</td>
-                <td className="py-3 px-4">{new Date(sub.submissionDate).toLocaleDateString()}</td>
-                <td className="py-3 px-4 text-center">
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                    sub.statusDetalhado === 'recebido' ? 'bg-blue-200 text-blue-800' : 'bg-yellow-200 text-yellow-800'
-                  }`}>
-                    {sub.statusDetalhado.replace('_', ' ').toUpperCase()}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  };
-
-  const getStatusClasses = (status?: string): string => {
-    const defaultClasses = 'bg-gray-200 text-gray-800';
-    if (!status) return defaultClasses;
-
-    // Normaliza o status para minúsculas e remove sublinhados para a comparação
-    const normalizedStatus = status.toLowerCase().replace(/_/g, '');
-
-    switch (normalizedStatus) {
-      case 'aprovado':
-      case 'incubacao':
-        return 'bg-green-200 text-green-800';
-      case 'recebido':
-        return 'bg-blue-200 text-blue-800';
-      case 'emanalise':
-      case 'review':
-      case 'ajustesnecessarios':
-        return 'bg-yellow-200 text-yellow-800';
-      case 'rejeitado':
-      case 'naoelegivelpipendente':
-        return 'bg-red-200 text-red-800';
-      case 'pending':
-        return defaultClasses;
-      default:
-        return defaultClasses;
-    }
-  };
-
-  // Renderiza o dashboard se o usuário estiver autenticado
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Meu Dashboard</h1>
-      <p className="mb-6">Bem-vindo, {user.displayName || user.email}!</p>
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Meus Projetos Submetidos</h2>
+    <div className="min-h-screen bg-zilion-bg text-white pb-20">
+      <GuidedTour />
+      {/* Header */}
+      <div className="bg-zilion-surface border-b border-gray-800 py-8 mb-8">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+            Dashboard do Criador
+          </h1>
+          <p className="text-gray-400">
+            Bem-vindo à incubadora, <span className="text-zilion-cyan font-semibold">{user.displayName || user.email}</span>.
+          </p>
+        </div>
+      </div>
+      
+      <div className="container mx-auto px-4">
         {(() => {
           if (isFetching) {
-            return <TableSkeleton />;
+            return <div className="text-center text-gray-500 py-20">Carregando seus dados...</div>;
           }
           if (error) {
-            return <p className="text-red-500">{error}</p>;
+            return <div className="text-center text-red-500 py-20">{error}</div>;
           }
           if (submissions.length === 0) {
-            return <p>Você ainda não enviou nenhum projeto.</p>;
+            return (
+              <div className="bg-zilion-surface border border-gray-800 p-10 rounded-lg text-center max-w-2xl mx-auto mt-10">
+                  <h2 className="text-2xl font-bold text-white mb-4">Nenhum Projeto Encontrado</h2>
+                  <p className="text-gray-400 mb-6">Você ainda não enviou nenhum projeto ou ele ainda não foi processado pela nossa equipe.</p>
+                  <button onClick={() => router.push('/submeter')} className="px-6 py-3 bg-zilion-cyan text-black font-bold rounded hover:shadow-neon-cyan transition-all">
+                    Iniciar Nova Submissão
+                  </button>
+              </div>
+            );
           }
+          
+          const activeSubmission = submissions[0]; 
+
           return (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="text-left py-3 px-4 font-semibold text-sm">Título da HQ</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm">Protocolo</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm">Data de Envio</th>
-                    <th className="text-center py-3 px-4 font-semibold text-sm">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {submissions.map((sub) => (
-                    <tr key={sub.id} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4">{sub.hqTitle}</td>
-                      <td className="py-3 px-4 font-mono text-xs">{sub.protocoloAtlas}</td>
-                      <td className="py-3 px-4">{new Date(sub.submissionDate).toLocaleDateString()}</td>
-                      <td className="py-3 px-4 text-center">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusClasses(sub.statusDetalhado)}`}>
-                          {(sub.statusDetalhado || 'PENDENTE').replace(/_/g, ' ').toUpperCase()}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column - Main Project Info */}
+              <div className="lg:col-span-2 space-y-8">
+                <MeuProjeto submission={activeSubmission} />
+                <FeedbackCuradoria />
+                <UploadForm submissionId={activeSubmission.id} onUploadSuccess={() => console.log(`Upload para ${activeSubmission.id} concluído.`)} />
+                <MinhasSubmissoes fileHistory={activeSubmission.fileHistory} />
+              </div>
+
+              {/* Right Column - Sidebar / Tools */}
+              <div className="space-y-8">
+                <MetricasPessoais />
+                <SolicitarReuniao />
+                <CrivoDoAtlas crivoData={activeSubmission.crivoDoAtlas} />
+                <MentoriasWorkshops reunioes={activeSubmission.reunioes} submissionId={activeSubmission.id} />
+                <DocumentosAssinados />
+              </div>
             </div>
           );
         })()}
@@ -225,4 +162,3 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
-

@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { adminDb, adminAuth } from '@/lib/firebase/adminApp';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { randomUUID } from 'crypto'; // Importa a função para gerar UUIDs
 
 export async function POST(request: NextRequest) {
   const authorization = request.headers.get('Authorization');
@@ -34,10 +35,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Você não tem permissão para modificar esta submissão.' }, { status: 403 });
     }
 
-    // 4. Criar o objeto da nova reunião
+    // 4. Criar o objeto da nova reunião, agora com um ID único
     const novaReuniao = {
+      reuniaoId: randomUUID(), // Adiciona um ID único
       tipo: 'solicitada_pelo_criador',
-      data: Timestamp.now(), // Gera o timestamp no servidor para evitar a limitação do 'serverTimestamp' em arrays
+      data: Timestamp.now(), 
       confirmado: false,
       motivo: motivo,
       solicitante: {

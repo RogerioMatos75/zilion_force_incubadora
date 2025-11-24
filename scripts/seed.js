@@ -1,5 +1,6 @@
 // scripts/seed.js
 const admin = require('firebase-admin');
+const { randomUUID } = require('crypto'); // Adicionado para gerar IDs únicos
 require('dotenv').config({ path: '.env.local' });
 
 // --- CONFIGURAÇÃO ---
@@ -84,7 +85,8 @@ async function createTestSubmission(creatorUid) {
 
   console.log(`\n2. Criando submissão de teste para o UID: ${creatorUid}...`);
 
-  const now = admin.firestore.Timestamp.now(); // Gerar timestamp uma vez
+  const now = admin.firestore.Timestamp.now();
+  const oneWeekFromNow = new admin.firestore.Timestamp(now.seconds + 7 * 24 * 60 * 60, now.nanoseconds);
 
   const submissionData = {
     creatorName: DUMMY_USER.displayName,
@@ -94,7 +96,7 @@ async function createTestSubmission(creatorUid) {
     
     etapaCerne: 'pré-incubação',
     statusDetalhado: 'recebido',
-    etapaPipeline: [{ etapa: 'pré-incubação', data: now }], // Usar o timestamp gerado
+    etapaPipeline: [{ etapa: 'pré-incubação', data: now }],
     crivoDoAtlas: [
       { id: 'etapa_pi', nome: '1. Análise Jurídica e de Propriedade Intelectual', status: 'aprovado', pontuacao: 0, feedback: 'Documento de PI inicial recebido.' },
       { id: 'etapa_mercado', nome: '2. Análise de Mercado e Potencial Comercial', status: 'pendente', pontuacao: 0, feedback: '' },
@@ -105,7 +107,15 @@ async function createTestSubmission(creatorUid) {
     visivelInvestidor: false,
     documentosAssinados: [],
     feedbacks: [],
-    reunioes: [],
+    reunioes: [
+      {
+        reuniaoId: randomUUID(),
+        tipo: 'workshop_fundamentos',
+        data: oneWeekFromNow,
+        confirmado: false,
+        motivo: 'Workshop sobre Fundamentos de Roteiro para HQs.'
+      }
+    ],
     termos: { aceitos: true, data: now, versao: '1.0.0' },
     declaracaoOriginalidade: { aceita: true, data: now },
     submissionDate: now,
