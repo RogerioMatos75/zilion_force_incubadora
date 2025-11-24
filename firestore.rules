@@ -1,49 +1,46 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // --- Funções Auxiliares ---
+    // --- Funções Auxiliares v2.0 ---
 
-    // Verdadeiro se o usuário logado for um membro da Diretoria
-    function isDiretoria() {
-      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Diretoria';
+    // Verdadeiro se o usuário logado for Admin ou Curador, baseado nos Custom Claims do token.
+    function isAdminOrCurator() {
+      return request.auth.token.role == 'admin' || request.auth.token.role == 'curador';
     }
 
-    // Verdadeiro se o usuário logado for o "dono" do documento
-    function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
+    // Verdadeiro se o ID do usuário logado corresponde ao 'creatorUid' do documento que está sendo acessado.
+    function isOwnerOfDoc() {
+      // `resource` é o documento como ele existe no banco de dados.
+      return request.auth.uid == resource.data.creatorUid;
     }
-
 
     // --- Regras das Coleções ---
 
     // Coleção 'users': Armazena dados de admins e criadores
     match /users/{userId} {
-      // Um usuário pode criar seu próprio perfil na coleção 'users' (essencial para o cadastro).
-      allow create: if isOwner(userId);
+      // Qualquer usuário autenticado pode ler seu próprio perfil de usuário.
+      // Admins/Curadores podem ler o perfil de qualquer um.
+      allow read: if request.auth.uid == userId || isAdminOrCurator();
 
-      // Um usuário pode ler seus próprios dados. Membros da Diretoria podem ler todos.
-      allow read: if isOwner(userId) || isDiretoria();
-
-      // Apenas a Diretoria pode atualizar dados de usuários (ex: promover para Diretoria).
-      allow update: if isDiretoria();
-      
-      // Apenas a Diretoria pode deletar usuários.
-      allow delete: if isDiretoria();
+      // Ninguém pode atualizar ou deletar perfis de usuário diretamente via cliente
+      // para garantir a integridade dos dados. Essas operações devem ser feitas via backend com privilégios de admin.
+      allow write: if false;
     }
 
     // Coleção 'submissions': Armazena os projetos enviados
     match /submissions/{submissionId} {
-      // Permite a criação de uma submissão se o usuário estiver logado
-      // e o campo 'creatorUid' no novo documento for o seu próprio ID.
-      allow create: if isOwner(request.resource.data.creatorUid);
+      // Admins e Curadores têm acesso total de leitura e escrita.
+      allow read, write: if isAdminOrCurator();
+      
+      // Um Criador pode ler e atualizar seus próprios documentos de submissão.
+      // Isso é essencial para o novo dashboard (ex: confirmar presença em reunião).
+      allow read, update: if isOwnerOfDoc();
 
-      // Apenas a Diretoria pode listar (ver todos), atualizar ou deletar submissões.
-      allow list, update, delete: if isDiretoria();
-
-      // Um criador pode ler (get) sua própria submissão.
-      // Um membro da Diretoria pode ler (get) qualquer submissão.
-      allow get: if isDiretoria() || (resource.data.creatorUid != null && isOwner(resource.data.creatorUid));
+      // Ninguém pode criar ou deletar submissões diretamente via cliente.
+      // A criação é feita via API (com SDK Admin) e o delete é uma operação restrita de admin.
+      allow create, delete: if false;
     }
   }
 }

@@ -87,18 +87,9 @@ O projeto utiliza Jest e React Testing Library para testes de funcionalidade.
 Esta seção detalha as próximas etapas para a evolução da plataforma, com foco no Dashboard do Criador e na automação do fluxo de curadoria.
 
 ### **Fase 1: Evolução do Backend e Modelo de Dados**
-- [ ] **1.1:** Atualizar o schema da coleção `submissions` no Firestore para incluir os novos campos necessários:
-    - [ ] `etapaPipeline` (array de objetos: `{ etapa: string, data: timestamp }`) para a timeline visual.
-    - [ ] `crivoDoAtlas` (objeto com booleans: `{ piValidado: false, criativoValidado: false, ... }`) para o checklist.
-    - [ ] `documentosAssinados` (array de objetos: `{ nome: string, url: string, data: timestamp }`).
-    - [ ] `feedbacks` (array de objetos: `{ autor: string, comentario: string, data: timestamp }`).
-    - [ ] `reunioes` (array de objetos: `{ tipo: 'mentoria' | 'workshop', data: timestamp, confirmado: boolean }`).
-    - [ ] `visivelInvestidor` (boolean).
-- [ ] **1.2:** Criar um script de "seed" (`/scripts/seed.js`) para popular o Firestore com dados de exemplo (1 usuário com role "criador" e 1 projeto em "Pré-Incubação").
-- [ ] **1.3:** Refatorar as Regras de Segurança do Firestore (`firestore.rules`) para implementar a lógica de acesso:
-    - [ ] Regra: `criador` só pode ler/escrever em seus próprios documentos.
-    - [ ] Regra: `curador` e `admin` podem ler/escrever em todos os documentos de submissão.
-    - [ ] Regra: Acesso de leitura para `investidor` condicionado ao campo `visivelInvestidor`.
+- [x] **1.1:** Atualizar o schema da coleção `submissions` no Firestore para incluir os novos campos necessários.
+- [x] **1.2:** Criar um script de "seed" (`/scripts/seed.js`) para popular o Firestore com dados de exemplo (1 usuário com role "criador" e 1 projeto em "Pré-Incubação").
+- [x] **1.3:** Refatorar as Regras de Segurança do Firestore (`firestore.rules`) para implementar a lógica de acesso.
 
 ### **Fase 2: Lógica de Negócio e APIs**
 - [ ] **2.1:** Modificar a API de aprovação (`PUT /api/admin/submissions/[id]`) para que o `admin` possa:

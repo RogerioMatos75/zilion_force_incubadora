@@ -62,15 +62,29 @@ export async function POST(request: NextRequest) {
       hqSampleUrl,
       ipDocumentUrl: ipDocumentUrl || null,
       
-      // Status e Metadados
-      etapaCerne: submissionCerne,
-      statusDetalhado: submissionStatus,
-      
+      // Status e Metadados v2.0
+      etapaCerne: submissionCerne, // 'pré-incubação' | 'naoElegivel'
+      statusDetalhado: submissionStatus, // 'recebido' | 'pi_pendente'
+      etapaPipeline: [{ etapa: submissionCerne, data: FieldValue.serverTimestamp() }],
+      crivoDoAtlas: [
+        { id: 'etapa_pi', nome: '1. Análise Jurídica e de Propriedade Intelectual', status: ipDocumentUrl ? 'aprovado' : 'pendente', pontuacao: 0, feedback: ipDocumentUrl ? 'Documento de PI inicial recebido.' : '' },
+        { id: 'etapa_mercado', nome: '2. Análise de Mercado e Potencial Comercial', status: 'pendente', pontuacao: 0, feedback: '' },
+        { id: 'etapa_roteiro', nome: '3. Avaliação de Roteiro e Narrativa', status: 'pendente', pontuacao: 0, feedback: '' },
+        { id: 'etapa_arte', nome: '4. Avaliação Artística e de Design', status: 'pendente', pontuacao: 0, feedback: '' },
+        { id: 'etapa_universo', nome: '5. Alinhamento com o Universo Zilion Force', status: 'pendente', pontuacao: 0, feedback: '' }
+      ],
+      visivelInvestidor: false,
+
+      // Arrays para o dashboard do criador
+      documentosAssinados: [],
+      feedbacks: [],
+      reunioes: [],
+
       // Termos e Declarações
       termos: {
         aceitos: termsAccepted,
         data: FieldValue.serverTimestamp(),
-        versao: '1.0.0' // Idealmente viria do frontend ou config
+        versao: '1.0.0'
       },
       declaracaoOriginalidade: {
         aceita: originalityDeclared,
