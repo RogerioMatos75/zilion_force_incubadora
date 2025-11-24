@@ -92,12 +92,10 @@ Esta seção detalha as próximas etapas para a evolução da plataforma, com fo
 - [x] **1.3:** Refatorar as Regras de Segurança do Firestore (`firestore.rules`) para implementar a lógica de acesso.
 
 ### **Fase 2: Lógica de Negócio e APIs**
-- [ ] **2.1:** Modificar a API de aprovação (`PUT /api/admin/submissions/[id]`) para que o `admin` possa:
-    - [ ] Atribuir a `role` "criador" a um usuário via Custom Claims.
-    - [ ] Disparar o e-mail de boas-vindas.
-- [ ] **2.2:** Criar novo endpoint `POST /api/creator/solicitar-reuniao` que cria um registro no Firestore.
-- [ ] **2.3:** Criar novo endpoint `POST /api/creator/upload-atualizacao` para lidar com o upload de novas versões de documentos no Storage.
-- [ ] **2.4:** Criar novo endpoint `GET /api/export-pdf/[submissionId]` para gerar o relatório do projeto.
+- [x] **2.1:** Modificar a API de aprovação (`PUT /api/admin/submissions/[id]`) para que o `admin` possa atribuir a `role` "criador" a um usuário via Custom Claims.
+- [x] **2.2:** Criar novo endpoint `POST /api/creator/solicitar-reuniao` que cria um registro no Firestore.
+- [x] **2.3:** Criar novo endpoint `POST /api/creator/upload-atualizacao` para lidar com o upload de novas versões de documentos no Storage.
+- [x] **2.4:** Criar novo endpoint `GET /api/export-pdf/[submissionId]` para gerar o relatório do projeto.
 
 ### **Fase 3: O Novo Dashboard do Criador (`/dashboard`)**
 - [ ] **3.1:** Aplicar o estilo "Dark mode neon Zilion Force" como base para o layout do dashboard.
