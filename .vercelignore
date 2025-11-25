@@ -1,0 +1,2 @@
+# Ignora o diretório do Firebase Functions durante o build da Vercel
+functions
