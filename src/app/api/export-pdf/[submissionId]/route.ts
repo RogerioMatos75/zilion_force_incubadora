@@ -1,6 +1,8 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { adminDb, adminAuth } from '@/lib/firebase/adminApp';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+
+// Diretiva para o Next.js tratar esta rota como 100% dinâmica, evitando problemas de build.
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest, context: { params: any }) {
   const authorization = request.headers.get('Authorization');
@@ -10,6 +12,9 @@ export async function GET(request: NextRequest, context: { params: any }) {
   const idToken = authorization.split('Bearer ')[1];
 
   try {
+    // Importação dinâmica da biblioteca de PDF
+    const { PDFDocument, rgb, StandardFonts } = await import('pdf-lib');
+
     const { id: submissionId } = context.params;
     if (!submissionId) {
       return NextResponse.json({ error: 'ID da submissão é obrigatório.' }, { status: 400 });
@@ -42,7 +47,6 @@ export async function GET(request: NextRequest, context: { params: any }) {
     
     let y = page.getSize().height - 50;
 
-    // Função auxiliar simples para verificar a necessidade de nova página
     const checkPageBreak = () => {
         if (y < 50) {
             page = pdfDoc.addPage();
@@ -96,7 +100,13 @@ export async function GET(request: NextRequest, context: { params: any }) {
     headers.append('Content-Type', 'application/pdf');
     headers.append('Content-Disposition', `attachment; filename="relatorio_${submissionId}.pdf"`);
 
-    return new NextResponse(pdfBytes, { status: 200, headers });
+    // O ambiente de build do Next.js possui regras de tipagem estritas.
+    // O Uint8Array retornado por `pdf-lib` não é diretamente compatível com `new Blob()`.
+    // A conversão para um Buffer do Node.js (`Buffer.from()`) garante a compatibilidade.
+    const pdfBuffer = Buffer.from(pdfBytes);
+    const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
+
+    return new Response(pdfBlob, { status: 200, headers });
 
   } catch (error: any) {
     if (error.code?.startsWith('auth/')) {
