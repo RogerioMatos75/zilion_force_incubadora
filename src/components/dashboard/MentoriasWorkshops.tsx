@@ -57,8 +57,12 @@ const MentoriasWorkshops: React.FC<MentoriasWorkshopsProps> = ({ reunioes, submi
     }
   };
   
-  // Ordena as reuniões pela data, da mais próxima para a mais distante
-  const sortedReunioes = reunioes ? [...reunioes].sort((a, b) => a.data.toMillis() - b.data.toMillis()) : [];
+  const sortedReunioes = (reunioes || []).sort((a, b) => {
+    const timeA = a.data ? a.data.toMillis() : 0;
+    const timeB = b.data ? b.data.toMillis() : 0;
+    // Ordena as reuniões pela data, da mais próxima para a mais distante (ascendente)
+    return timeA - timeB;
+  });
 
   return (
     <div className="bg-zilion-surface border border-gray-800 p-6 rounded-lg shadow-lg hover:shadow-neon-cyan transition-shadow duration-300">
@@ -72,10 +76,13 @@ const MentoriasWorkshops: React.FC<MentoriasWorkshopsProps> = ({ reunioes, submi
         {sortedReunioes.length > 0 ? sortedReunioes.map((reuniao) => (
           <div key={reuniao.reuniaoId} className="flex items-center justify-between bg-zilion-gray p-4 rounded border-l-4 border-zilion-purple">
             <div>
-              <p className="font-bold text-white text-lg capitalize">{reuniao.tipo.replace(/_/g, ' ')}</p>
+              <p className="font-bold text-white text-lg capitalize">{(reuniao.tipo || 'Tipo não definido').replace(/_/g, ' ')}</p>
               <p className="text-sm text-gray-300">{reuniao.motivo}</p>
               <p className="text-xs text-blue-300 mt-1">
-                {reuniao.data.toDate().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })} às {reuniao.data.toDate().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                {reuniao.data
+                  ? `${reuniao.data.toDate().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })} às ${reuniao.data.toDate().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
+                  : 'Data não definida'
+                }
               </p>
             </div>
             <div className="ml-4 flex-shrink-0">

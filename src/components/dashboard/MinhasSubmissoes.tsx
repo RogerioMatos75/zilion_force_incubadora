@@ -34,7 +34,11 @@ const MinhasSubmissoes: React.FC<MinhasSubmissoesProps> = ({ fileHistory }) => {
   };
 
   // Ordena o histórico do arquivo mais recente para o mais antigo
-  const sortedHistory = [...fileHistory].sort((a, b) => b.uploadedAt.toMillis() - a.uploadedAt.toMillis());
+  const sortedHistory = [...(fileHistory || [])].sort((a, b) => {
+    const timeA = a.uploadedAt ? a.uploadedAt.toMillis() : 0;
+    const timeB = b.uploadedAt ? b.uploadedAt.toMillis() : 0;
+    return timeB - timeA;
+  });
 
   return (
     <div className="bg-gray-800 text-white p-6 rounded-lg shadow-xl border border-gray-700 mt-8">

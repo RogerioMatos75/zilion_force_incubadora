@@ -17,7 +17,11 @@ const DocumentosAssinados: React.FC<DocumentosAssinadosProps> = ({ documentos })
     return timestamp.toDate().toLocaleDateString('pt-BR');
   };
 
-  const sortedDocs = [...(documentos || [])].sort((a, b) => b.dataAssinatura.toMillis() - a.dataAssinatura.toMillis());
+  const sortedDocs = [...(documentos || [])].sort((a, b) => {
+    const timeA = a.dataAssinatura ? a.dataAssinatura.toMillis() : 0;
+    const timeB = b.dataAssinatura ? b.dataAssinatura.toMillis() : 0;
+    return timeB - timeA;
+  });
 
   return (
     <div className="bg-zilion-surface border border-gray-800 p-6 rounded-lg shadow-lg">

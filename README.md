@@ -111,7 +111,20 @@ Esta seção detalha as próximas etapas para a evolução da plataforma, com fo
 ### **Fase 4: Finalização e Documentação**
 - [x] **4.1:** Implementar o "Tour Guiado" no primeiro login do criador (pode ser um modal simples com as instruções).
 - [x] **4.2:** Atualizar o `README.md` com uma nova seção explicando como um `admin` pode definir Custom Claims para os usuários via script.
-- [ ] **4.3:** Realizar um teste de ponta-a-ponta do novo fluxo: submissão -> aprovação -> login do criador -> visualização do dashboard.
+- [x] **4.3:** Realizar um teste de ponta-a-ponta do novo fluxo: submissão -> aprovação -> login do criador -> visualização do dashboard.
+
+## Fase 5: Evolução do Painel do Administrador (Frontend)
+
+- [ ] **5.1:** Melhorias na Página de Detalhes da Submissão (`/admin/submission/[id]`):
+- [ ] **5.1.1:** Componente "Enviar Feedback": Criar um formulário (com campo de texto e tipo de feedback) para que o admin possa enviar novos feedbacks para o criador. Isso irá popular a timeline de "Feedback da Curadoria".
+- [ ] **5.1.2:** Componente "Gerenciar Métricas": Adicionar campos para o admin definir ou atualizar o "Próximo Deadline" (proximoDeadline) e a "Versão Atual" (versaoAtual) do projeto.
+- [ ] **5.1.3:** Componente "Adicionar Documentos": Criar uma interface para o admin adicionar links de documentos assinados (contratos,NDAs) que aparecerão para o criador.
+- [ ] **5.2:** Gestão de Eventos (Mentorias & Workshops):
+- [ ] **5.2.1:** Página de Gestão de Eventos: Criar uma nova página (ex: /admin/eventos) onde administradores possam criar e visualizar os eventos disponíveis (mentorias, workshops).
+- [ ] **5.2.2:** Convidar para Evento: Na página de detalhes da submissão, adicionar uma função para que o admin possa "inscrever" o criador em um evento, o que faria ele aparecer na agenda do criador.
+- [ ] **5.3:** Visão Geral e Analytics (Dashboard `/admin`):
+- [ ] **5.3.1:** Estatísticas Rápidas: Adicionar cards que mostrem números importantes (Total de Submissões, Projetos em Análise, etc.).
+- [ ] **5.3.2:** (Opcional): Adicionar um gráfico simples com o volume de submissões por período.
 
 ---
 

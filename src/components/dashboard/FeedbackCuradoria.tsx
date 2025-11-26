@@ -18,7 +18,12 @@ const FeedbackCuradoria: React.FC<FeedbackCuradoriaProps> = ({ feedbacks }) => {
     return timestamp.toDate().toLocaleDateString('pt-BR');
   };
 
-  const sortedFeedbacks = [...(feedbacks || [])].sort((a, b) => b.data.toMillis() - a.data.toMillis());
+  const sortedFeedbacks = [...(feedbacks || [])].sort((a, b) => {
+    // Adiciona uma verificação defensiva para o caso de a data não existir no objeto de feedback.
+    const timeA = a.data ? a.data.toMillis() : 0;
+    const timeB = b.data ? b.data.toMillis() : 0;
+    return timeB - timeA;
+  });
 
   const getDotColor = (tipo: Feedback['tipo']) => {
     switch (tipo) {
