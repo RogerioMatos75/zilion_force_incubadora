@@ -31,6 +31,10 @@ interface Submission {
   fileHistory: any[];
   crivoDoAtlas: any[];
   reunioes: any[];
+  documentosAssinados: any[];
+  feedbacks: any[];
+  proximoDeadline?: Timestamp;
+  versaoAtual?: string;
 }
 
 const DashboardPage = () => {
@@ -75,6 +79,10 @@ const DashboardPage = () => {
           fileHistory: data.fileHistory || [],
           crivoDoAtlas: data.crivoDoAtlas || [],
           reunioes: data.reunioes || [],
+          documentosAssinados: data.documentosAssinados || [],
+          feedbacks: data.feedbacks || [],
+          proximoDeadline: data.proximoDeadline,
+          versaoAtual: data.versaoAtual,
         });
       });
       
@@ -140,18 +148,18 @@ const DashboardPage = () => {
               {/* Left Column - Main Project Info */}
               <div className="lg:col-span-2 space-y-8">
                 <MeuProjeto submission={activeSubmission} />
-                <FeedbackCuradoria />
+                <FeedbackCuradoria feedbacks={activeSubmission.feedbacks} />
                 <UploadForm submissionId={activeSubmission.id} onUploadSuccess={() => console.log(`Upload para ${activeSubmission.id} concluído.`)} />
                 <MinhasSubmissoes fileHistory={activeSubmission.fileHistory} />
               </div>
 
               {/* Right Column - Sidebar / Tools */}
               <div className="space-y-8">
-                <MetricasPessoais />
+                <MetricasPessoais proximoDeadline={activeSubmission.proximoDeadline} versaoAtual={activeSubmission.versaoAtual} />
                 <SolicitarReuniao />
                 <CrivoDoAtlas crivoData={activeSubmission.crivoDoAtlas} />
                 <MentoriasWorkshops reunioes={activeSubmission.reunioes} submissionId={activeSubmission.id} />
-                <DocumentosAssinados />
+                <DocumentosAssinados documentos={activeSubmission.documentosAssinados} />
               </div>
             </div>
           );

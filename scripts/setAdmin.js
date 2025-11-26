@@ -39,10 +39,17 @@ async function setAdminRole(email) {
     // Busca o usuário pelo e-mail
     const user = await admin.auth().getUserByEmail(email);
     
-    // Define o custom claim 'role' como 'admin'
-    await admin.auth().setCustomUserClaims(user.uid, { role: 'admin' });
+    // Pega as permissões (claims) existentes para não sobrescrevê-las
+    const existingClaims = user.customClaims || {};
+
+    // Mescla as permissões existentes com a nova permissão de admin
+    const newClaims = { ...existingClaims, role: 'admin' };
+
+    // Define o custom claim 'role' como 'admin' de forma segura
+    await admin.auth().setCustomUserClaims(user.uid, newClaims);
     
-    console.log(`SUCESSO: O usuário ${email} (UID: ${user.uid}) agora é um administrador.`);
+    console.log(`SUCESSO: O usuário ${email} (UID: ${user.uid}) agora tem a permissão de administrador.`);
+    console.log('Permissões atuais:', newClaims);
     console.log('Lembre-se: O usuário precisa fazer logout e login novamente para que a mudança tenha efeito.');
 
   } catch (error) {

@@ -103,7 +103,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ submissionId, onUploadSuccess }
                     onChange={handleFileChange}
                     className="block w-full text-sm text-gray-400
                         file:mr-4 file:py-2 file:px-4
-                        file:rounded-full file:border-0
+                        file:rounded-full
                         file:text-sm file:font-semibold
                         file:bg-zilion-cyan/20 file:text-zilion-cyan file:border file:border-zilion-cyan
                         hover:file:bg-zilion-cyan hover:file:text-black hover:file:shadow-neon-cyan

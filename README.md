@@ -102,11 +102,11 @@ Esta seção detalha as próximas etapas para a evolução da plataforma, com fo
 - [x] **3.4:** Desenvolver o componente **"Minhas Submissões"** para listar o histórico de arquivos.
 - [x] **3.5:** Desenvolver o componente **"Progresso no Crivo do Atlas"** (checklist read-only).
 - [x] **3.6:** Desenvolver o componente **"Mentorias & Workshops"** com a agenda e o botão "Confirmar Presença".
-- [ ] **3.7:** Desenvolver o componente **"Documentos Assinados"** para visualização dos links.
-- [ ] **3.8:** Desenvolver o componente **"Feedback da Curadoria"** em formato de timeline.
+- [x] **3.7:** Desenvolver o componente **"Documentos Assinados"** para visualização dos links.
+- [x] **3.8:** Desenvolver o componente **"Feedback da Curadoria"** em formato de timeline.
 - [x] **3.9:** Desenvolver o componente **"Upload de Atualizações"** com o formulário de upload.
-- [ ] **3.10:** Desenvolver o componente **"Métricas Pessoais"** para exibir deadlines.
-- [ ] **3.11:** Implementar a lógica do botão **"Solicitar Reunião"**.
+- [x] **3.10:** Desenvolver o componente **"Métricas Pessoais"** para exibir deadlines.
+- [x] **3.11:** Implementar a lógica do botão **"Solicitar Reunião"**.
 
 ### **Fase 4: Finalização e Documentação**
 - [x] **4.1:** Implementar o "Tour Guiado" no primeiro login do criador (pode ser um modal simples com as instruções).
@@ -197,11 +197,11 @@ async function setCreatorRole(uid) {
 
 ### Fase 4: Deploy e Validação
 
-- [ ] **4.1:** Configurar o projeto para deploy na Vercel.
+- [x] **4.1:** Configurar o projeto para deploy na Vercel.
 - [ ] **4.2:** Realizar o deploy inicial e configurar as variáveis de ambiente do **Firebase** na Vercel.
 - [ ] **4.3:** Executar um teste de ponta-a-ponta (E2E):
     - [ ] **4.3.1:** Submeter um novo projeto como "Criador".
-    - [ ] **4.3.2:** Fazer login como "Archon" usando o Firebase Auth.
+    - [x] **4.3.2:** Fazer login como "Administrador" usando o Firebase Auth.
     - [ ] **4.3.3:** Verificar a submissão no painel, acessar o arquivo e alterar seu status.
 - [ ] **4.4:** Revisar a conformidade com a LGPD (textos de consentimento no formulário).
 
