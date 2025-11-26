@@ -76,7 +76,7 @@ export default function AdminDashboardPage() {
         <nav className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16">
-              <div className="flex items-center"><h1 className="text-xl font-bold">Painel Archon</h1></div>
+              <div className="flex items-center"><h1 className="text-xl font-bold">Conta Administrativa</h1></div>
               <div className="flex items-center">
                 <p className="text-sm text-gray-600 mr-4">Logado como: {user.email}</p>
                 <button onClick={() => signOut(auth)} className="px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Sair</button>

@@ -16,11 +16,16 @@ export async function GET(request: NextRequest) {
 
     const submissions = snapshot.docs.map(doc => {
       const data = doc.data();
+      // Lógica defensiva: Garante que a data exista e seja válida antes de converter.
+      // Se não for, define como nulo para não quebrar a API.
+      const submissionDate = (data.submissionDate && typeof data.submissionDate.toDate === 'function')
+        ? data.submissionDate.toDate().toISOString()
+        : null;
+
       return {
         id: doc.id,
         ...data,
-        // Converte o timestamp do Firestore para um formato de data ISO string
-        submissionDate: data.submissionDate.toDate().toISOString(),
+        submissionDate: submissionDate,
       };
     });
 
