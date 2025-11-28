@@ -130,7 +130,7 @@ const SubmissionForm = () => {
 
       {/* Checkboxes */}
       <div className="flex items-center"><input id="originality" type="checkbox" required checked={originalityDeclared} onChange={(e) => setOriginalityDeclared(e.target.checked)} className="h-4 w-4" /><label htmlFor="originality" className="ml-2 block text-sm">Declaro que esta obra é original.</label></div>
-      <div className="flex items-center"><input id="terms" type="checkbox" required checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} className="h-4 w-4" /><label htmlFor="terms" className="ml-2 block text-sm">Eu li e aceito os <a href="/termos" target="_blank" className="font-medium text-indigo-600">Termos de Envio</a>.</label></div>
+      <div className="flex items-center"><input id="terms" type="checkbox" required checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} className="h-4 w-4" /><label htmlFor="terms" className="ml-2 block text-sm">Eu li e aceito os <a href="/termos" target="_blank" className="font-medium text-indigo-600">Termos de Serviço</a> e a <a href="/privacidade" target="_blank" className="font-medium text-indigo-600">Política de Privacidade</a>.</label></div>
       
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button type="submit" disabled={loading} className="w-full flex justify-center py-2 px-4 border rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400">{loading ? 'Enviando...' : 'Enviar Projeto'}</button>

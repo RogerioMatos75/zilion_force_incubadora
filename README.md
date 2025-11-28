@@ -52,6 +52,7 @@ A tabela abaixo representa todas as páginas e rotas de API do projeto, mostrand
     ```bash
     npm run dev
     npm run build
+    npm start
     ```
 
 4.  **Acesse a Aplicação:**
@@ -113,18 +114,22 @@ Esta seção detalha as próximas etapas para a evolução da plataforma, com fo
 - [x] **4.2:** Atualizar o `README.md` com uma nova seção explicando como um `admin` pode definir Custom Claims para os usuários via script.
 - [x] **4.3:** Realizar um teste de ponta-a-ponta do novo fluxo: submissão -> aprovação -> login do criador -> visualização do dashboard.
 
-## Fase 5: Evolução do Painel do Administrador (Frontend)
+## Fase 5: Evolução do Painel do Administrador (Frontend) - Plano Pós-Debug
 
-- [ ] **5.1:** Melhorias na Página de Detalhes da Submissão (`/admin/submission/[id]`):
-- [ ] **5.1.1:** Componente "Enviar Feedback": Criar um formulário (com campo de texto e tipo de feedback) para que o admin possa enviar novos feedbacks para o criador. Isso irá popular a timeline de "Feedback da Curadoria".
-- [ ] **5.1.2:** Componente "Gerenciar Métricas": Adicionar campos para o admin definir ou atualizar o "Próximo Deadline" (proximoDeadline) e a "Versão Atual" (versaoAtual) do projeto.
-- [ ] **5.1.3:** Componente "Adicionar Documentos": Criar uma interface para o admin adicionar links de documentos assinados (contratos,NDAs) que aparecerão para o criador.
-- [ ] **5.2:** Gestão de Eventos (Mentorias & Workshops):
-- [ ] **5.2.1:** Página de Gestão de Eventos: Criar uma nova página (ex: /admin/eventos) onde administradores possam criar e visualizar os eventos disponíveis (mentorias, workshops).
-- [ ] **5.2.2:** Convidar para Evento: Na página de detalhes da submissão, adicionar uma função para que o admin possa "inscrever" o criador em um evento, o que faria ele aparecer na agenda do criador.
-- [ ] **5.3:** Visão Geral e Analytics (Dashboard `/admin`):
-- [ ] **5.3.1:** Estatísticas Rápidas: Adicionar cards que mostrem números importantes (Total de Submissões, Projetos em Análise, etc.).
-- [ ] **5.3.2:** (Opcional): Adicionar um gráfico simples com o volume de submissões por período.
+- **5.1: Reconstrução Incremental da Página de Detalhes (`/admin/submission/[id]`)**
+  - `[ ] 5.1.1:` Criar e renderizar o esqueleto do componente `EnviarFeedback`. **Verificação:** Rodar `npm run build`.
+  - `[ ] 5.1.2:` Criar e renderizar o esqueleto do componente `GerenciarMetricas`. **Verificação:** Rodar `npm run build`.
+  - `[ ] 5.1.3:` Criar e renderizar o esqueleto do componente `AdicionarDocumento`. **Verificação:** Rodar `npm run build`.
+  - `[ ] 5.1.4:` Implementar a lógica funcional completa dos três componentes acima (chamadas de API, etc.). **Verificação:** Teste manual e `npm run build` final.
+
+- **5.2: Implementação da Gestão de Eventos**
+  - `[ ] 5.2.1:` Criar a página `/admin/eventos` com uma estrutura de layout básica. **Verificação:** Rodar `npm run build`.
+  - `[ ] 5.2.2:` Implementar a listagem de eventos na nova página (conectando à API). **Verificação:** Rodar `npm run build`.
+  - `[ ] 5.2.3:` Implementar a função "Convidar para Evento" na página de detalhes da submissão. **Verificação:** Teste manual e `npm run build`.
+
+- **5.3: Implementação do Dashboard de Analytics (`/admin`)**
+  - `[ ] 5.3.1:` Adicionar os cards de "Estatísticas Rápidas" no dashboard (apenas com layout estático). **Verificação:** Rodar `npm run build`.
+  - `[ ] 5.3.2:` Conectar os cards com dados reais da API. **Verificação:** Teste manual e `npm run build`.
 
 ---
 
@@ -433,14 +438,32 @@ Onde encontrar suas credenciais:
 
 ### Fase 4: Deploy e Validação
 
-- [ ] **4.1:** Configurar o projeto para deploy na Vercel.
-- [ ] **4.2:** Realizar o deploy inicial e configurar as variáveis de ambiente do **Firebase** na Vercel.
+- [x] **4.1:** Configurar o projeto para deploy na Vercel.
+- [x] **4.2:** Realizar o deploy inicial e configurar as variáveis de ambiente do **Firebase** na Vercel.
 - [ ] **4.3:** Executar um teste de ponta-a-ponta (E2E):
     - [ ] **4.3.1:** Submeter um novo projeto como "Criador".
-    - [ ] **4.3.2:** Fazer login como "Archon" usando o Firebase Auth.
+    - [x] **4.3.2:** Fazer login como "Administrativo" usando o Firebase Auth.
     - [ ] **4.3.3:** Verificar a submissão no painel, acessar o arquivo e alterar seu status.
-- [ ] **4.4:** Revisar a conformidade com a LGPD (textos de consentimento no formulário).
+- [x] **4.4:** Revisar a conformidade com a LGPD (textos de consentimento no formulário).
+      Passo 1: Criar as Páginas de Políticas (Frontend Estático)
+  Primeiro, precisamos ter as páginas com os textos legais para onde possamos linkar. Proponho criar duas páginas, que no momento podem ter
+  um texto de placeholder:
+   - [x] **4.5:**: Criar a página em /termos para os "Termos de Serviço".
+   - [x] **4.6:**: Criar a página em /privacidade para a "Política de Privacidade".
+  Verificação: `npm run build` para garantir que as novas rotas funcionam.
 
+  Passo 2: Adicionar o Consentimento no Formulário de Submissão (Frontend Dinâmico)
+  Este é o ponto crucial para os documentos que os criadores enviam.
+   - [x] **4.7:**: Na página /submeter, antes do botão de envio, adicionaremos um checkbox obrigatório do tipo:
+     - "Li e concordo com os [Termos de Serviço](/termos) e 
+     - com a [Política de Privacidade](/privacidade) para a submissão do meu projeto."
+   - [x] **4.8:**: O botão "Enviar Projeto" só ficará habilitado após o usuário marcar este checkbox.
+
+  Passo 3: Salvar a Prova do Consentimento (Backend)
+  Precisamos registrar que o usuário deu o consentimento.
+   - [x] **4.9:**: A API que recebe a submissão (/api/submissions) será ajustada para exigir um campo termosAceitos: true.
+   - [x] **4.10:**: Ao salvar no Firestore, vamos gravar um objeto com a prova do aceite, por exemplo: termos: { versao: '1.0', aceito: true, data:
+     new Date() }. Isso cria um registro legal.
 ---
 
 ### Fase 5: Fortalecimento e Integrações (Novas Tarefas)
@@ -594,3 +617,31 @@ Onde encontrar suas credenciais:
 - [x] **12.4:** Implementar a lógica no frontend (`/login/page.tsx`) para chamar a nova API e fazer o redirecionamento.
 - [x] **12.5:** Atualizar o `Header.tsx` para que o botão "Login / Cadastro" aponte para a nova página `/login`.
 - [x] **12.6:** Remover ou redirecionar a página antiga de login do admin (`/admin/login`).
+---
+
+### Fase 13: Portal do Investidor (Anjo)
+
+**Backend e Seguran�a (A Base)**
+- [ ] 13.1: **Definir a 
+ole de Investidor:** No backend, criar um mecanismo para que um dmin possa atribuir a *custom claim* 
+ole: 'investidor' a um usu�rio do Firebase.
+- [ ] 13.2: **Atualizar Regras de Seguran�a (irestore.rules):** Modificar as regras do Firestore para permitir que usu�rios com 
+ole: 'investidor' tenham permiss�o de **leitura** na cole��o submissions.
+- [ ] 13.3: **Refinar Regras de Seguran�a:** Dentro das regras, especificar que investidores s� podem ler submissions onde o campo isivelInvestidor seja 	rue, ou onde o status seja graduado.
+- [ ] 13.4: **Criar API Segura para Investidores:**
+  - [ ] 13.4.1: Criar a rota GET /api/investor/pipeline-projects que retorna apenas os projetos em andamento marcados com isivelInvestidor: true.
+  - [ ] 13.4.2: Criar a rota GET /api/investor/showcase-projects que retorna apenas os projetos com status: 'graduado'.
+  - **Verifica��o:** Testar as novas rotas de API para garantir que as regras de seguran�a est�o sendo aplicadas.
+
+**Frontend (A Experi�ncia do Investidor)**
+- [ ] 13.5: **P�gina de Cadastro de Investidor:** Criar uma nova p�gina (ex: /quero-investir) que funcione como um formul�rio de interesse, salvando os dados em uma nova cole��o investorInterests no Firestore para aprova��o do admin.
+- [ ] 13.6: **Atualizar L�gica de Login:** Garantir que o login unificado em /login redirecione usu�rios com 
+ole: 'investidor' para o novo dashboard /investidor.
+- [ ] 13.7: **Criar o Dashboard do Investidor (/investidor):**
+  - [ ] 13.7.1: Criar a estrutura b�sica da p�gina /investidor. **Verifica��o:** 
+pm run build.
+  - [ ] 13.7.2: Desenvolver o componente **"Projetos em Acompanhamento"**, que consome a API /api/investor/pipeline-projects. **Verifica��o:** 
+pm run build.
+  - [ ] 13.7.3: Desenvolver o componente **"Vitrine de Oportunidades"**, que consome a API /api/investor/showcase-projects. **Verifica��o:** 
+pm run build.
+- [ ] 13.8: **P�gina de Detalhes do Projeto (Vis�o do Investidor):** Criar uma vers�o "read-only" da p�gina de detalhes do projeto, mostrando apenas as informa��es relevantes para um investidor.

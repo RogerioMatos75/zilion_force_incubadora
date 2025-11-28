@@ -12,15 +12,15 @@ export async function GET(request: NextRequest, context: { params: any }) {
   const idToken = authorization.split('Bearer ')[1];
 
   try {
-    // Importação dinâmica da biblioteca de PDF
-    const { PDFDocument, rgb, StandardFonts } = await import('pdf-lib');
+    // Importação dinâmica da biblioteca de PDF e do nosso novo helper
+    const { generateSubmissionPdf } = await import('@/lib/pdf/generateSubmissionPdf');
 
     const { id: submissionId } = context.params;
     if (!submissionId) {
       return NextResponse.json({ error: 'ID da submissão é obrigatório.' }, { status: 400 });
     }
 
-    // 1. Autenticação e Autorização
+    // 1. Autenticação e Autorização (lógica mantida)
     const decodedToken = await adminAuth.verifyIdToken(idToken);
     const { uid, role } = decodedToken;
 
@@ -39,70 +39,14 @@ export async function GET(request: NextRequest, context: { params: any }) {
       return NextResponse.json({ error: 'Acesso negado.' }, { status: 403 });
     }
 
-    // 2. Criação do Documento PDF (Lógica Refatorada)
-    const pdfDoc = await PDFDocument.create();
-    let page = pdfDoc.addPage();
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    // 2. Geração do PDF usando o helper
+    const pdfBytes = await generateSubmissionPdf(submissionData);
     
-    let y = page.getSize().height - 50;
-
-    const checkPageBreak = () => {
-        if (y < 50) {
-            page = pdfDoc.addPage();
-            y = page.getSize().height - 50;
-        }
-    };
-
-    // Título
-    page.drawText('Relatório de Projeto - Zilion Force Incubadora', { x: 50, y, font: boldFont, size: 18, color: rgb(0, 0, 0) });
-    y -= 40;
-
-    // --- Dados Principais ---
-    checkPageBreak();
-    page.drawText('Protocolo Atlas:', { x: 50, y, font: boldFont, size: 12 });
-    page.drawText(submissionData?.protocoloAtlas || 'N/A', { x: 180, y, font, size: 12 });
-    y -= 20;
-
-    checkPageBreak();
-    page.drawText('Título da Obra:', { x: 50, y, font: boldFont, size: 12 });
-    page.drawText(submissionData?.hqTitle || 'N/A', { x: 180, y, font, size: 12 });
-    y -= 20;
-    
-    checkPageBreak();
-    page.drawText('Criador:', { x: 50, y, font: boldFont, size: 12 });
-    page.drawText(submissionData?.creatorName || 'N/A', { x: 180, y, font, size: 12 });
-    y -= 20;
-    
-    checkPageBreak();
-    page.drawText('Data de Submissão:', { x: 50, y, font: boldFont, size: 12 });
-    page.drawText(submissionData?.submissionDate.toDate().toLocaleDateString('pt-BR') || 'N/A', { x: 180, y, font, size: 12 });
-    y -= 30;
-
-    // --- Status do Crivo do Atlas ---
-    checkPageBreak();
-    page.drawText('Pipeline de Incubação (Crivo do Atlas)', { x: 50, y, font: boldFont, size: 14 });
-    y -= 25;
-
-    submissionData?.crivoDoAtlas.forEach((etapa: any) => {
-        checkPageBreak();
-        const statusText = `[${etapa.status.toUpperCase()}] - Pontuação: ${etapa.pontuacao}`;
-        page.drawText(`- ${etapa.nome}`, { x: 50, y, font, size: 12 });
-        y -= 20;
-    });
-    
-    y -= 10;
-
     // 3. Serializar o PDF e preparar a resposta
-    const pdfBytes = await pdfDoc.save();
-    
     const headers = new Headers();
     headers.append('Content-Type', 'application/pdf');
     headers.append('Content-Disposition', `attachment; filename="relatorio_${submissionId}.pdf"`);
 
-    // O ambiente de build do Next.js possui regras de tipagem estritas.
-    // O Uint8Array retornado por `pdf-lib` não é diretamente compatível com `new Blob()`.
-    // A conversão para um Buffer do Node.js (`Buffer.from()`) garante a compatibilidade.
     const pdfBuffer = Buffer.from(pdfBytes);
     const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
 

@@ -3,20 +3,20 @@ const teamMembers = [
     name: 'Rogerio Matos',
     role: 'Idealizador do Universo Zilion Force Comics',
     bio: 'Guiando a visão estratégica da incubadora, com especialidade em Propriedade Intelectual e entretenimento.',
-    imageUrl: 'https://placehold.co/400x400/1f2937/9ca3af?text=Rogerio',
+    imageUrl: '/foto 3x4 Rogerio.jpg',
   },
   {
     name: 'Gilmar Santos',
     role: 'Co-Fundador Administrativo',
     bio: 'Responsável pelo "Crivo do Atlas", garantindo que apenas os projetos com maior potencial de mercado e qualidade sejam selecionados.',
-    imageUrl: 'https://placehold.co/400x400/1f2937/9ca3af?text=Gilmar',
+    imageUrl: '/foto 3x4 Gilmar.jpg',
   },
 ];
 
 const mentors = [
-    { name: 'Mentor Jurídico', role: 'Especialista em Direitos Autorais', bio: 'Focado em proteger e maximizar o valor da sua PI.', imageUrl: 'https://placehold.co/400x400/1f2937/9ca3af?text=Foto' },
-    { name: 'Mentor de Roteiro', role: 'Roteirista Premiado', bio: 'Ajuda a refinar narrativas e a adaptar histórias de HQs para o formato de roteiro.', imageUrl: 'https://placehold.co/400x400/1f2937/9ca3af?text=Foto' },
-    { name: 'Mentor de Mercado', role: 'Produtor Executivo', bio: 'Conecta os projetos incubados com os principais players do mercado.', imageUrl: 'https://placehold.co/400x400/1f2937/9ca3af?text=Foto' },
+    { name: 'Mentor Jurídico', role: 'Especialista em Direitos Autorais', bio: 'Focado em proteger e maximizar o valor da sua PI.', imageUrl: '/Mentores.png' },
+    { name: 'Mentor de Roteiro', role: 'Roteirista Premiado', bio: 'Ajuda a refinar narrativas e a adaptar histórias de HQs para o formato de roteiro.', imageUrl: '/Mentores.png' },
+    { name: 'Mentor de Mercado', role: 'Produtor Executivo', bio: 'Conecta os projetos incubados com os principais players do mercado.', imageUrl: '/Mentores.png' },
 ]
 
 const SobreNosPage = () => {
