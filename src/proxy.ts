@@ -2,10 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { adminAuth } from '@/lib/firebase/adminApp';
 
-// Força o middleware a rodar no ambiente Node.js, que é compatível com o Firebase Admin SDK
-export const runtime = 'nodejs';
-
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const authorization = request.headers.get('Authorization');
   
   if (!authorization?.startsWith('Bearer ')) {

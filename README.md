@@ -8,14 +8,14 @@ Este documento é o plano de ação consolidado para o MVP, baseado nos artefato
 
 A tabela abaixo representa todas as páginas e rotas de API do projeto, mostrando como cada uma é renderizada pelo Next.js.
 
-```bash
+
  Route (app) 
 ┌ ○ / 
 ├ ○ /_not-found 
 ├ ○ /admin 
-├ ƒ /admin/submission/[id] 
+├ ƒ /admin/submission/\\[id] 
 ├ ƒ /api/admin/submissions 
-├ ƒ /api/admin/submissions/[id] 
+├ ƒ /api/admin/submissions/\\[id] 
 ├ ƒ /api/auth/login 
 ├ ƒ /api/creator/submissions 
 ├ ƒ /api/submissions 
