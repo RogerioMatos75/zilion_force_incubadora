@@ -117,10 +117,10 @@ Esta seção detalha as próximas etapas para a evolução da plataforma, com fo
 ## Fase 5: Evolução do Painel do Administrador (Frontend) - Plano Pós-Debug
 
 - **5.1: Reconstrução Incremental da Página de Detalhes (`/admin/submission/[id]`)**
-  - `[ ] 5.1.1:` Criar e renderizar o esqueleto do componente `EnviarFeedback`. **Verificação:** Rodar `npm run build`.
-  - `[ ] 5.1.2:` Criar e renderizar o esqueleto do componente `GerenciarMetricas`. **Verificação:** Rodar `npm run build`.
-  - `[ ] 5.1.3:` Criar e renderizar o esqueleto do componente `AdicionarDocumento`. **Verificação:** Rodar `npm run build`.
-  - `[ ] 5.1.4:` Implementar a lógica funcional completa dos três componentes acima (chamadas de API, etc.). **Verificação:** Teste manual e `npm run build` final.
+  - `[x] 5.1.1:` Criar e renderizar o esqueleto do componente `EnviarFeedback`. **Verificação:** Rodar `npm run build`.
+  - `[x] 5.1.2:` Criar e renderizar o esqueleto do componente `GerenciarMetricas`. **Verificação:** Rodar `npm run build`.
+  - `[x] 5.1.3:` Criar e renderizar o esqueleto do componente `AdicionarDocumento`. **Verificação:** Rodar `npm run build`.
+  - `[x] 5.1.4:` Implementar a lógica funcional completa dos três componentes acima (chamadas de API, etc.). **Verificação:** Teste manual e `npm run build` final.
 
 - **5.2: Implementação da Gestão de Eventos**
   - `[ ] 5.2.1:` Criar a página `/admin/eventos` com uma estrutura de layout básica. **Verificação:** Rodar `npm run build`.

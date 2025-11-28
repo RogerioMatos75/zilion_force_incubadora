@@ -4,6 +4,10 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { Timestamp } from 'firebase/firestore';
+import EnviarFeedback from '@/components/admin/submission/EnviarFeedback';
+import GerenciarMetricas from '@/components/admin/submission/GerenciarMetricas';
+import AdicionarDocumento from '@/components/admin/submission/AdicionarDocumento';
 
 // Tipo expandido para incluir os novos campos do pipeline
 interface SubmissionDetails {
@@ -19,6 +23,8 @@ interface SubmissionDetails {
   pontuacao?: number;
   ipDocumentUrl?: string;
   hqSampleUrl?: string;
+  proximoDeadline?: Timestamp;
+  versaoAtual?: string;
 }
 
 // Etapas do Pipeline para o seletor
@@ -59,8 +65,19 @@ export default function SubmissionDetailPage() {
       const fetchSubmissionDetails = async () => {
         try {
           setDataLoading(true);
-          const response = await fetch(`/api/admin/submissions/${id}`);
-          if (!response.ok) throw new Error('Falha ao buscar detalhes da submissão.');
+          const token = await user.getIdToken(); // Obtém o token de autenticação
+          const response = await fetch(`/api/admin/submissions/${id}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`, // Adiciona o cabeçalho
+            },
+          });
+
+          if (!response.ok) {
+            if (response.status === 401) {
+              throw new Error('Sessão inválida. Por favor, faça login novamente.');
+            }
+            throw new Error('Falha ao buscar detalhes da submissão.');
+          }
           
           const data: SubmissionDetails = await response.json();
           setSubmission(data);
@@ -69,8 +86,8 @@ export default function SubmissionDetailPage() {
           setFeedback(data.feedbackAnalise || '');
           setPontuacao(data.pontuacao || '');
 
-        } catch (err) {
-          setError('Não foi possível carregar os detalhes da submissão.');
+        } catch (err: any) {
+          setError(err.message || 'Não foi possível carregar os detalhes da submissão.');
         } finally {
           setDataLoading(false);
         }
@@ -196,6 +213,16 @@ export default function SubmissionDetailPage() {
             </form>
           </div>
         </div>
+
+        <EnviarFeedback submissionId={submission.id} />
+
+        <GerenciarMetricas 
+          submissionId={submission.id}
+          initialDeadline={submission.proximoDeadline} 
+          initialVersao={submission.versaoAtual} 
+        />
+
+        <AdicionarDocumento submissionId={submission.id} />
       </main>
     </div>
   );

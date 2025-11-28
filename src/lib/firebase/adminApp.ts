@@ -15,12 +15,12 @@ const serviceAccount = {
 if (!getApps().length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-    // Adicione a URL do seu bucket do Storage se precisar interagir com ele no backend
-    // storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET 
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET 
   });
 }
 
 const adminDb = admin.firestore();
 const adminAuth = admin.auth();
+const adminStorage = admin.storage();
 
-export { adminDb, adminAuth };
+export { adminDb, adminAuth, adminStorage };
