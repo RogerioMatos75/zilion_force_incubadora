@@ -1,0 +1,7 @@
+{
+  "command": "python.exe app.py",
+  "serverUrl": "http://localhost:3000/dashboard",
+  "authenticateProxy": false,
+  "autoDetectDevServer": true,
+  "commitMode": "commits"
+}
