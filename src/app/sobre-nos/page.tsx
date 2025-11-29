@@ -24,8 +24,33 @@ const SobreNosPage = () => {
     <div className="bg-gray-900 text-white min-h-screen">
       <main className="container mx-auto px-6 py-12">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold">Nossa Equipe e Mentores</h1>
-          <p className="mt-4 text-lg text-gray-300 max-w-3xl mx-auto">A força por trás da Zilion Force. Especialistas dedicados a transformar sua visão em realidade.</p>
+          <h1 className="text-4xl font-bold">Sobre a Zilion Force</h1>
+          <p className="mt-4 text-lg text-gray-300 max-w-3xl mx-auto">Conheça nossa missão, visão e a equipe dedicada a transformar sua visão em realidade.</p>
+        </div>
+
+        {/* Seção Institucional */}
+        <div className="max-w-4xl mx-auto mb-16 space-y-12">
+          <div className="bg-gray-800 p-8 rounded-lg shadow-lg">
+            <h2 className="text-3xl font-bold text-blue-400 mb-4">A Incubadora</h2>
+            <p className="text-gray-300 leading-relaxed">
+              Este projeto é o lançamento oficial e a estruturação da <strong>ZILION FORCE COMICS & INCUBADORA</strong>, a primeira incubadora brasileira especializada em Propriedade Intelectual (PI) de HQs para Audiovisual. O Plano de Fundação Completo consolida todos os documentos e processos construídos em um Códice Operacional único, pronto para implementação imediata nas 5 Camadas do Crivo do Atlas. O objetivo é estabelecer a Zilion Force como uma entidade juridicamente sólida, com governança clara e capacidade operacional e criativa para se tornar referência nacional em 24 meses.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 text-center">
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <h3 className="text-2xl font-bold text-blue-400 mb-3">Nossa Missão</h3>
+              <p className="text-gray-400">
+                Guiar criadores de Histórias em Quadrinhos na jornada curatorial de adaptação de sua PI para o setor audiovisual, atuando como mediadores entre artistas emergentes, instituições culturais e públicos brasileiros, promovendo debates sobre identidade, memória e diversidade.
+              </p>
+            </div>
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <h3 className="text-2xl font-bold text-blue-400 mb-3">Nossa Visão</h3>
+              <p className="text-gray-400">
+                Ser o hub curatorial referência no Brasil para transformar HQs em narrativas audiovisuais impactantes, redefinindo espaços expositivos e promovendo inclusão cultural em um país de rica diversidade e vastas desigualdades.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="mb-16">

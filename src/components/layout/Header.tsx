@@ -30,6 +30,7 @@ const Header = () => {
             )}
           </li>
           <li><Link href="/sobre-nos" className="hover:text-blue-400">Quem Somos</Link></li>
+          <li><Link href="/investidores" className="hover:text-blue-400">Investidores</Link></li>
           <li><Link href="/contato" className="hover:text-blue-400">Contato</Link></li>
         </ul>
 

@@ -211,6 +211,50 @@ const PipelinePage = () => {
             Pronto para começar sua jornada? Submeta seu projeto
           </Link>
         </div>
+
+        {/* Seção de Detalhes Estratégicos */}
+        <div className="max-w-4xl mx-auto mt-20 text-left">
+            <div className="bg-gray-800 p-8 rounded-lg shadow-lg">
+                <h2 className="text-3xl font-bold text-blue-400 mb-6 text-center">Nossa Estratégia e Metas</h2>
+                
+                {/* Objetivos */}
+                <div className="mb-8">
+                    <h3 className="text-2xl font-semibold text-white mb-3">Nossos Objetivos</h3>
+                    <ul className="list-disc list-inside space-y-2 text-gray-300">
+                        <li><strong>Estrutura Legal Inabalável:</strong> Tornar a Zilion Force uma entidade juridicamente robusta, com governança clara e capacidade formal de celebrar contratos.</li>
+                        <li><strong>Códice Operacional Único:</strong> Criar um documento-mestre que rege todo o ecossistema, garantindo consistência criativa, jurídica e metodológica.</li>
+                        <li><strong>Hub Operacional Online:</strong> Transformar o site em um hub operacional, incluindo uma vitrine e um formulário de submissão.</li>
+                        <li><strong>Padronização de Conteúdo:</strong> Padronizar a produção de conteúdo institucional em todas as plataformas para estabelecer autoridade no mercado.</li>
+                        <li><strong>Referência Nacional:</strong> Consolidar 10 projetos incubados e desenvolver 2 pilotos audiovisuais até 2026.</li>
+                    </ul>
+                </div>
+
+                {/* Especificações */}
+                <div className="mb-8">
+                    <h3 className="text-2xl font-semibold text-white mb-3">As 5 Camadas do Atlas (Especificações)</h3>
+                    <p className="text-gray-400 mb-4">O plano de fundação está dividido em 5 áreas principais, com foco em execução em até 90 dias para a estrutura básica:</p>
+                    <ul className="list-disc list-inside space-y-2 text-gray-300">
+                        <li><strong>ESTRUTURA LEGAL (O Protocolo de Fundação):</strong> Consultoria jurídica, validação de Contrato Social, depósito de marca no INPI e elaboração de Regulamento Interno.</li>
+                        <li><strong>CÓDICE DO ATLAS (A Bíblia do Universo):</strong> Consolidação de todos os documentos mestres em um único local.</li>
+                        <li><strong>PLATAFORMA CENTRAL (O Terminal):</strong> Estruturação do site definitivo com navegação focada na Incubadora e sistema de submissão.</li>
+                        <li><strong>FORJA DE CONTEÚDO (A Linha de Montagem):</strong> Definição de um pipeline institucional de produção de conteúdo.</li>
+                        <li><strong>PLANO DE DISPERSÃO (A Rede Neural Narrativa):</strong> Estratégia de expansão focada em resultados, parcerias com ANCINE/FSA e canais prioritários.</li>
+                    </ul>
+                </div>
+
+                {/* Marcos */}
+                <div>
+                    <h3 className="text-2xl font-semibold text-white mb-3">Marcos do Projeto</h3>
+                    <ul className="list-disc list-inside space-y-2 text-gray-300">
+                        <li><strong>Estrutura Legal:</strong> Certidão da Junta Comercial, protocolo do INPI e Regulamento Interno assinado.</li>
+                        <li><strong>Códice do Atlas:</strong> Códice versão 1.0 aprovado pelos sócios e equipe jurídica.</li>
+                        <li><strong>Plataforma Central:</strong> Site no ar com formulário de submissão funcional e NDA automático.</li>
+                        <li><strong>Forja de conteúdo:</strong> 3 meses consecutivos de publicação sem falhas e crescimento orgânico.</li>
+                        <li><strong>Plano de Dispersão:</strong> Junho de 2026, com o primeiro projeto incubado tendo um contrato FSA ou piloto filmado.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
       </main>
     </div>
   );
