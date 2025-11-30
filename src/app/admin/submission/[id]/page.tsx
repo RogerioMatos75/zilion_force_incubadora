@@ -140,7 +140,9 @@ export default function SubmissionDetailPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <Link href="/admin" className="text-indigo-600 hover:text-indigo-900">&larr; Voltar para o Painel</Link>
+              <Link href="/admin" className="text-zilion-gold-600 hover:text-zilion-gold-500 font-bold uppercase tracking-wider text-xs flex items-center">
+                <span className="mr-2 text-lg">&larr;</span> Voltar para o Painel
+              </Link>
             </div>
           </div>
         </div>
@@ -205,7 +207,7 @@ export default function SubmissionDetailPage() {
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400"
+                  className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-bold uppercase tracking-widest rounded-md shadow-sm text-black bg-zilion-gold-500 hover:bg-zilion-gold-400 hover:shadow-[0_0_15px_rgba(212,175,55,0.4)] disabled:bg-gray-400 transition-all duration-300"
                 >
                   {isUpdating ? 'Salvando...' : 'Salvar Atualizações'}
                 </button>

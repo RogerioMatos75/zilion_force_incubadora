@@ -1,150 +1,130 @@
 // src/app/dashboard/page.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { db } from '@/lib/firebase/clientApp';
-import { collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
-
-// Importando todos os componentes do dashboard
+import { useEffect, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import MeuProjeto from '@/components/dashboard/MeuProjeto';
+import MetricasPessoais from '@/components/dashboard/MetricasPessoais';
 import UploadForm from '@/components/dashboard/UploadForm';
 import MinhasSubmissoes from '@/components/dashboard/MinhasSubmissoes';
 import CrivoDoAtlas from '@/components/dashboard/CrivoDoAtlas';
-import MentoriasWorkshops from '@/components/dashboard/MentoriasWorkshops';
-import DocumentosAssinados from '@/components/dashboard/DocumentosAssinados';
 import FeedbackCuradoria from '@/components/dashboard/FeedbackCuradoria';
-import MetricasPessoais from '@/components/dashboard/MetricasPessoais';
-import SolicitarReuniao from '@/components/dashboard/SolicitarReuniao';
+import MentoriasWorkshops from '@/components/dashboard/MentoriasWorkshops';
+import Agenda from '@/components/dashboard/Agenda';
+import DocumentosAssinados from '@/components/dashboard/DocumentosAssinados';
 import GuidedTour from '@/components/dashboard/GuidedTour';
+import SolicitarReuniao from '@/components/dashboard/SolicitarReuniao';
 
-// Interface completa da Submissão, agora incluindo todos os campos
-interface Submission {
-  id: string;
-  hqTitle: string;
-  statusDetalhado: string;
-  submissionDate: string;
-  protocoloAtlas: string;
-  etapaCerne: string;
-  etapaPipeline: any[];
-  fileHistory: any[];
-  crivoDoAtlas: any[];
-  reunioes: any[];
-  documentosAssinados: any[];
-  feedbacks: any[];
-  proximoDeadline?: Timestamp;
-  versaoAtual?: string;
-}
-
-const DashboardPage = () => {
+export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [showTour, setShowTour] = useState(false);
+  const [submissions, setSubmissions] = useState<any[]>([]);
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Efeito para proteger a rota contra usuários não logados
+  const fetchSubmissions = useCallback(async () => {
+    if (!user) return;
+    setIsFetching(true);
+    setError(null);
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch('/api/creator/submissions', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha ao carregar submissões');
+      }
+
+      const data = await response.json();
+      setSubmissions(data);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Erro desconhecido');
+    } finally {
+      setIsFetching(false);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/');
+      router.push('/login');
+    } else if (user) {
+      // Check if it's the first time user visits dashboard
+      const hasSeenTour = localStorage.getItem('hasSeenTour');
+      if (!hasSeenTour) {
+        setShowTour(true);
+      }
+      fetchSubmissions();
     }
-  }, [user, loading, router]);
-
-  // Efeito para buscar os dados do usuário em tempo real
-  useEffect(() => {
-    if (!user) return;
-
-    setIsFetching(true);
-    const submissionsRef = collection(db, 'submissions');
-    const q = query(submissionsRef, where('creatorUid', '==', user.uid));
-
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const userSubmissions: Submission[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const submissionDate = data.submissionDate instanceof Timestamp 
-          ? data.submissionDate.toDate().toISOString() 
-          : new Date().toISOString();
-
-        userSubmissions.push({
-          id: doc.id,
-          hqTitle: data.hqTitle || 'N/A',
-          statusDetalhado: data.statusDetalhado || 'N/A',
-          submissionDate: submissionDate,
-          protocoloAtlas: data.protocoloAtlas || 'N/A',
-          etapaCerne: data.etapaCerne || 'indefinido',
-          etapaPipeline: data.etapaPipeline || [],
-          fileHistory: data.fileHistory || [],
-          crivoDoAtlas: data.crivoDoAtlas || [],
-          reunioes: data.reunioes || [],
-          documentosAssinados: data.documentosAssinados || [],
-          feedbacks: data.feedbacks || [],
-          proximoDeadline: data.proximoDeadline,
-          versaoAtual: data.versaoAtual,
-        });
-      });
-      
-      setSubmissions(userSubmissions);
-      setIsFetching(false);
-      setError(null);
-    }, (err) => {
-      console.error("Dashboard: Erro no listener do Firestore:", err);
-      setError('Ocorreu um erro ao carregar seus projetos em tempo real.');
-      setIsFetching(false);
-    });
-
-    return () => unsubscribe();
-  }, [user]);
+  }, [user, loading, router, fetchSubmissions]);
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen bg-zilion-bg flex items-center justify-center">
-        <div className="text-zilion-cyan animate-pulse text-xl font-bold">Carregando Zilion Force...</div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-zilion-gold-500 animate-pulse text-xl font-bold tracking-widest uppercase">Carregando Zilion Force...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-zilion-bg text-white pb-20">
+    <div className="bg-black text-white pb-20 pt-24">
       <GuidedTour />
-      {/* Header */}
-      <div className="bg-zilion-surface border-b border-gray-800 py-8 mb-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-            Dashboard do Criador
+      {/* Header do Dashboard */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white/5 border-b border-white/10 py-10 mb-10 relative overflow-hidden"
+      >
+        <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid-pattern.svg')] opacity-5 z-0"></div>
+        <div className="container mx-auto px-6 relative z-10">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">
+            Dashboard do <span className="text-zilion-gold-500">Criador</span>
           </h1>
           <p className="text-gray-400">
-            Bem-vindo à incubadora, <span className="text-zilion-cyan font-semibold">{user.displayName || user.email}</span>.
+            Bem-vindo à incubadora, <span className="text-white font-semibold">{user.displayName || user.email}</span>.
           </p>
         </div>
-      </div>
+      </motion.div>
       
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-6">
         {(() => {
           if (isFetching) {
-            return <div className="text-center text-gray-500 py-20">Carregando seus dados...</div>;
+            return <div className="text-center text-gray-500 py-20 animate-pulse">Sincronizando dados da incubadora...</div>;
           }
           if (error) {
-            return <div className="text-center text-red-500 py-20">{error}</div>;
+            return <div className="text-center text-red-500 py-20 bg-red-900/10 rounded-lg border border-red-900/30">{error}</div>;
           }
           if (submissions.length === 0) {
             return (
-              <div className="bg-zilion-surface border border-gray-800 p-10 rounded-lg text-center max-w-2xl mx-auto mt-10">
-                  <h2 className="text-2xl font-bold text-white mb-4">Nenhum Projeto Encontrado</h2>
-                  <p className="text-gray-400 mb-6">Você ainda não enviou nenhum projeto ou ele ainda não foi processado pela nossa equipe.</p>
-                  <button onClick={() => router.push('/submeter')} className="px-6 py-3 bg-zilion-cyan text-black font-bold rounded hover:shadow-neon-cyan transition-all">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white/5 border border-white/10 p-12 rounded-2xl text-center max-w-2xl mx-auto mt-10 backdrop-blur-sm"
+              >
+                  <h2 className="text-3xl font-bold text-white mb-4">Nenhum Projeto Encontrado</h2>
+                  <p className="text-gray-400 mb-8 text-lg">Você ainda não enviou nenhum projeto ou ele ainda não foi processado pela nossa equipe.</p>
+                  <button onClick={() => router.push('/submeter')} className="px-8 py-4 bg-zilion-gold-500 text-black font-bold uppercase tracking-widest rounded hover:bg-zilion-gold-400 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all duration-300">
                     Iniciar Nova Submissão
                   </button>
-              </div>
+              </motion.div>
             );
           }
           
           const activeSubmission = submissions[0]; 
 
           return (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+            >
               {/* Left Column - Main Project Info */}
               <div className="lg:col-span-2 space-y-8">
                 <MeuProjeto submission={activeSubmission} />
@@ -161,12 +141,10 @@ const DashboardPage = () => {
                 <MentoriasWorkshops reunioes={activeSubmission.reunioes} submissionId={activeSubmission.id} />
                 <DocumentosAssinados documentos={activeSubmission.documentosAssinados} />
               </div>
-            </div>
+            </motion.div>
           );
         })()}
       </div>
     </div>
   );
 };
-
-export default DashboardPage;

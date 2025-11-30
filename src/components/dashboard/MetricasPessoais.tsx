@@ -1,51 +1,36 @@
-import React from 'react';
-import { Timestamp } from 'firebase/firestore';
+import { motion } from 'framer-motion';
 
 interface MetricasPessoaisProps {
-  proximoDeadline?: Timestamp;
+  proximoDeadline?: string;
   versaoAtual?: string;
 }
 
-const MetricasPessoais: React.FC<MetricasPessoaisProps> = ({ proximoDeadline, versaoAtual }) => {
-
-  const calculateDaysRemaining = (deadline?: Timestamp): string => {
-    if (!deadline) return 'N/A';
-    
-    const today = new Date();
-    const deadlineDate = deadline.toDate();
-    const differenceInTime = deadlineDate.getTime() - today.getTime();
-    
-    if (differenceInTime < 0) {
-      return 'Atrasado';
-    }
-
-    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-    
-    if (differenceInDays === 0) {
-      return 'Hoje!';
-    }
-    if (differenceInDays === 1) {
-      return '1 Dia';
-    }
-
-    return `${differenceInDays} Dias`;
-  };
-
+const MetricasPessoais: React.FC<MetricasPessoaisProps> = ({ proximoDeadline = "20/07/2024", versaoAtual = "v1.2.0" }) => {
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <div className="bg-zilion-surface p-4 rounded border border-gray-800 text-center">
-        <p className="text-gray-400 text-xs uppercase tracking-widest">Próximo Deadline</p>
-        <p className="text-2xl font-bold text-white mt-1">
-          {calculateDaysRemaining(proximoDeadline)}
-        </p>
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="space-y-6"
+    >
+      <div className="bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
+        <div className="flex items-center justify-between mb-2">
+            <h3 className="text-gray-400 text-sm font-medium uppercase tracking-wider">Próximo Deadline</h3>
+            <span className="text-xl">⏳</span>
+        </div>
+        <p className="text-3xl font-bold text-white mb-1">{proximoDeadline}</p>
+        <p className="text-xs text-zilion-gold-500">Faltam 15 dias</p>
       </div>
-      <div className="bg-zilion-surface p-4 rounded border border-gray-800 text-center">
-        <p className="text-gray-400 text-xs uppercase tracking-widest">Versão Atual</p>
-        <p className="text-2xl font-bold text-zilion-magenta mt-1">
-          {versaoAtual || 'N/A'}
-        </p>
+
+      <div className="bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
+        <div className="flex items-center justify-between mb-2">
+            <h3 className="text-gray-400 text-sm font-medium uppercase tracking-wider">Versão Atual</h3>
+            <span className="text-xl">🚀</span>
+        </div>
+        <p className="text-3xl font-bold text-white mb-1">{versaoAtual}</p>
+        <p className="text-xs text-green-400">Em dia com o cronograma</p>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -9,23 +9,47 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        zilion: {
-          bg: "#050505",
-          surface: "#121212",
-          cyan: "#00f3ff",
-          magenta: "#ff00ff",
-          purple: "#bc13fe",
-          gray: "#1f1f1f"
-        }
-      },
-      boxShadow: {
-        'neon-cyan': '0 0 10px #00f3ff, 0 0 20px #00f3ff',
-        'neon-magenta': '0 0 10px #ff00ff, 0 0 20px #ff00ff',
+        // Paleta Luxury Tech
+        black: "#000000",
+        white: "#FFFFFF",
+        "zilion-gold": {
+          DEFAULT: "#D4AF37",
+          light: "#F9DF74",
+          dark: "#AA8C2C",
+          50: "#FCF9E8",
+          100: "#F9F3D1",
+          200: "#F4E6A3",
+          300: "#EFD975",
+          400: "#EACC47",
+          500: "#D4AF37", // Base
+          600: "#AA8C2C",
+          700: "#806921",
+          800: "#554616",
+          900: "#2B230B",
+        },
+        "zilion-silver": {
+          DEFAULT: "#C0C0C0",
+          light: "#E5E7EB",
+          dark: "#A0A0A0",
+          50: "#F9FAFB",
+          100: "#F3F4F6",
+          200: "#E5E7EB",
+          300: "#D1D5DB",
+          400: "#9CA3AF",
+          500: "#6B7280",
+          600: "#4B5563",
+          700: "#374151",
+          800: "#1F2937",
+          900: "#111827",
+        },
       },
       backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "gradient-gold": "linear-gradient(135deg, #AA8C2C 0%, #D4AF37 50%, #F9DF74 100%)",
+        "gradient-silver": "linear-gradient(135deg, #A0A0A0 0%, #C0C0C0 50%, #E5E7EB 100%)",
+        "gradient-dark": "linear-gradient(to bottom, #000000, #111111)",
+      },
+      fontFamily: {
+        sans: ['var(--font-inter)', 'sans-serif'],
       },
     },
   },

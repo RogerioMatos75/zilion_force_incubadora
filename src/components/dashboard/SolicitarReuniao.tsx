@@ -1,20 +1,29 @@
-import React from 'react';
+import { motion } from 'framer-motion';
 
 const SolicitarReuniao = () => {
   return (
-    <div className="bg-gradient-to-r from-zilion-surface to-black border border-zilion-cyan/30 p-6 rounded-lg text-center">
-      <h3 className="text-xl font-bold text-white mb-2">Precisa de ajuda?</h3>
-      <p className="text-gray-400 mb-4 text-sm">Agende uma reunião com a equipe de curadoria em nossa plataforma.</p>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, delay: 0.9 }}
+      className="bg-gradient-to-br from-zilion-gold-900/40 to-black p-8 rounded-2xl shadow-lg border border-zilion-gold-500/30 text-center relative overflow-hidden backdrop-blur-sm"
+    >
+      <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid-pattern.svg')] opacity-10 z-0"></div>
       
-      <a 
-        href="https://zilionforcecomics.bitrix24.com.br/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block w-full py-3 bg-zilion-cyan/10 border border-zilion-cyan text-zilion-cyan font-bold rounded hover:bg-zilion-cyan hover:text-black hover:shadow-neon-cyan transition-all duration-300"
-      >
-        Agendar Reunião no Bitrix24
-      </a>
-    </div>
+      <div className="relative z-10">
+        <h3 className="text-xl font-bold text-white mb-2">Precisa de Ajuda?</h3>
+        <p className="text-sm text-gray-300 mb-6">Agende uma reunião com nossos especialistas.</p>
+        
+        <a 
+          href="https://b24-k8lm26.bitrix24.com.br/~QvJQS"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full block py-3 bg-transparent border border-zilion-gold-500 text-zilion-gold-500 font-bold uppercase tracking-widest rounded hover:bg-zilion-gold-500 hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.1)] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+        >
+            Solicitar Reunião
+        </a>
+      </div>
+    </motion.div>
   );
 };
 

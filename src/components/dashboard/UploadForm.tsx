@@ -3,10 +3,11 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { motion } from 'framer-motion';
 
 interface UploadFormProps {
   submissionId: string;
-  onUploadSuccess: () => void; // Callback para notificar o pai (ex: para exibir uma mensagem)
+  onUploadSuccess: () => void;
 }
 
 const UploadForm: React.FC<UploadFormProps> = ({ submissionId, onUploadSuccess }) => {
@@ -50,86 +51,99 @@ const UploadForm: React.FC<UploadFormProps> = ({ submissionId, onUploadSuccess }
       });
 
       if (!signedUrlResponse.ok) throw new Error('Falha ao preparar o upload.');
-      const { signedUrl, filePath } = await signedUrlResponse.json();
+      const { signedUrl } = await signedUrlResponse.json();
 
       // Etapa 2: Fazer o upload do arquivo para o Google Cloud Storage
-      setMessage('2/3: Enviando arquivo... (Isso pode demorar dependendo do tamanho)');
+      setMessage('2/3: Enviando arquivo...');
       const uploadResponse = await fetch(signedUrl, {
         method: 'PUT',
         headers: { 'Content-Type': file.type },
         body: file,
       });
 
-      if (!uploadResponse.ok) throw new Error('Falha no upload do arquivo para o Storage.');
+      if (!uploadResponse.ok) throw new Error('Falha no upload para o storage.');
 
-      // Etapa 3: Confirmar o upload com nosso backend para salvar o registro no Firestore
-      setMessage('3/3: Finalizando e registrando o arquivo...');
+      // Etapa 3: Confirmar o upload no backend
+      setMessage('3/3: Confirmando...');
       const confirmResponse = await fetch('/api/creator/confirm-upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
           submissionId: submissionId,
           fileName: file.name,
-          filePath: filePath,
-          fileType: file.type,
-          fileSize: file.size,
         }),
       });
-      
-      if (!confirmResponse.ok) throw new Error('Falha ao registrar o arquivo no banco de dados.');
+
+      if (!confirmResponse.ok) throw new Error('Falha ao confirmar upload.');
 
       setStatus('success');
-      setMessage(`Arquivo '${file.name}' enviado com sucesso!`);
+      setMessage('Upload realizado com sucesso!');
       setFile(null);
-      if(onUploadSuccess) onUploadSuccess();
+      onUploadSuccess();
+      
+      setTimeout(() => {
+        setStatus('idle');
+        setMessage('');
+      }, 3000);
 
-    } catch (err: any) {
-      console.error("Erro no processo de upload:", err);
+    } catch (error: any) {
+      console.error(error);
       setStatus('error');
-      setMessage(`Erro: ${err.message}`);
+      setMessage(error.message || 'Erro ao fazer upload.');
     }
   };
 
   return (
-    <div className="bg-zilion-surface text-white p-6 rounded-lg shadow-lg border border-gray-800 mt-8">
-        <h3 className="text-xl font-bold text-zilion-cyan mb-4 flex items-center">
-          <span className="mr-2 text-2xl">📤</span> Upload de Atualizações
-        </h3>
-        <p className="text-sm text-gray-400 mb-6">Envie novas versões da sua HQ, roteiro, ou outros documentos relevantes para o projeto.</p>
-        <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative group">
-                <input
-                    type="file"
-                    onChange={handleFileChange}
-                    className="block w-full text-sm text-gray-400
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-full
-                        file:text-sm file:font-semibold
-                        file:bg-zilion-cyan/20 file:text-zilion-cyan file:border file:border-zilion-cyan
-                        hover:file:bg-zilion-cyan hover:file:text-black hover:file:shadow-neon-cyan
-                        transition-all duration-300 cursor-pointer"
-                    disabled={status === 'uploading'}
-                />
-            </div>
-            <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-zilion-cyan to-zilion-purple text-black font-bold py-3 px-4 rounded-lg 
-                disabled:opacity-50 disabled:cursor-not-allowed 
-                hover:shadow-neon-cyan hover:scale-[1.01] transition-all duration-300 uppercase tracking-widest"
-                disabled={!file || status === 'uploading'}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="bg-white/5 p-8 rounded-2xl shadow-lg border border-white/10 backdrop-blur-sm"
+    >
+      <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+        <span className="bg-white/10 p-2 rounded-lg mr-3 text-xl">📤</span>
+        Enviar Atualização
+      </h3>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="relative group">
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="block w-full text-sm text-gray-400
+              file:mr-4 file:py-3 file:px-6
+              file:rounded-full file:border-0
+              file:text-sm file:font-bold file:uppercase file:tracking-wider
+              file:bg-zilion-gold-500 file:text-black
+              hover:file:bg-zilion-gold-400
+              cursor:pointer focus:outline-none"
+          />
+        </div>
+        
+        {file && (
+          <div className="bg-black/40 p-3 rounded-lg flex items-center justify-between border border-white/10">
+            <span className="text-sm text-gray-300 truncate max-w-[200px]">{file.name}</span>
+            <button 
+              type="submit" 
+              disabled={status === 'uploading'}
+              className="text-xs font-bold text-zilion-gold-500 hover:text-zilion-gold-400 uppercase tracking-wider disabled:opacity-50"
             >
-                {status === 'uploading' ? 'Enviando...' : 'Enviar Arquivo'}
+              {status === 'uploading' ? 'Enviando...' : 'Confirmar'}
             </button>
-        </form>
-        {message && (
-            <div className={`mt-4 p-3 rounded text-sm text-center border ${
-                status === 'error' ? 'bg-red-900/20 border-red-500 text-red-400' : 
-                status === 'success' ? 'bg-green-900/20 border-green-500 text-green-400' : 'bg-gray-800 border-gray-600 text-gray-300'
-            }`}>
-                {message}
-            </div>
+          </div>
         )}
-    </div>
+
+        {message && (
+          <p className={`text-xs ${status === 'error' ? 'text-red-400' : 'text-green-400'} mt-2`}>
+            {message}
+          </p>
+        )}
+
+        <p className="text-xs text-gray-500 mt-2">
+          Formatos aceitos: PDF, JPG, PNG (Max 10MB).
+        </p>
+      </form>
+    </motion.div>
   );
 };
 

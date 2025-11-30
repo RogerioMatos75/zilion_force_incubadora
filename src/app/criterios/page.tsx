@@ -1,74 +1,105 @@
+'use client';
+
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 const CriteriosPage = () => {
   return (
-    <div className="bg-gray-900 text-white min-h-screen">
-      <main className="container mx-auto px-6 py-12">
-        <h1 className="text-4xl font-bold mb-4 text-center">Critérios de Seleção</h1>
-        <p className="mb-12 text-lg text-gray-300 text-center max-w-3xl mx-auto">
-          Para garantir a excelência e a segurança jurídica dos projetos, a Incubadora Zilion Force adota os seguintes critérios de seleção.
-        </p>
+    <div className="bg-black text-white min-h-screen relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid-pattern.svg')] opacity-5 z-0"></div>
+      
+      <main className="container mx-auto px-6 py-20 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+            Critérios de <span className="text-zilion-gold-500">Seleção</span>
+          </h1>
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto font-light">
+            A excelência é o nosso padrão. Conheça os requisitos para fazer parte da elite da Zilion Force.
+          </p>
+        </motion.div>
 
-        <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-12">
           
-          <div className="border-l-4 border-red-500 pl-6 mb-8 bg-gray-700/20 p-4 rounded-r-lg">
-            <h2 className="text-2xl font-semibold text-red-400">Requisito Obrigatório: Propriedade Intelectual</h2>
-            <p className="mt-2 text-gray-300">
-              O critério mais importante para a elegibilidade do seu projeto é a comprovação de Propriedade Intelectual (PI). É indispensável que o criador apresente o <strong>comprovante de registro de direitos autorais da obra</strong>, emitido por um órgão competente como a <strong>Biblioteca Nacional</strong>.
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="bg-black/50 backdrop-blur-md border-l-4 border-zilion-gold-500 p-8 rounded-r-xl shadow-[0_0_30px_rgba(212,175,55,0.1)]"
+          >
+            <h2 className="text-2xl font-bold text-zilion-gold-500 mb-4 flex items-center gap-3">
+              <span className="text-3xl">⚠️</span> Requisito Obrigatório: Propriedade Intelectual
+            </h2>
+            <p className="text-gray-300 leading-relaxed mb-4">
+              O critério mais importante para a elegibilidade do seu projeto é a comprovação de Propriedade Intelectual (PI). É indispensável que o criador apresente o <strong className="text-white">comprovante de registro de direitos autorais da obra</strong>, emitido por um órgão competente como a <strong className="text-white">Biblioteca Nacional</strong>.
             </p>
-            <p className="mt-2 text-gray-400">
+            <p className="text-sm text-gray-500 uppercase tracking-wide font-bold">
               Submissões sem este comprovante não seguirão para a fase de avaliação.
             </p>
-          </div>
+          </motion.div>
 
           {/* Nova Seção sobre a Importância da PI */}
-          <div className="border-l-4 border-blue-500 pl-6 mb-12 bg-gray-700/20 p-6 rounded-r-lg">
-            <h2 className="text-2xl font-semibold text-blue-400 mb-4">A Importância de Proteger Sua Obra e Personagens</h2>
-            <p className="text-gray-300 mb-6">
-              No universo das HQs, a proteção da Propriedade Intelectual (PI) é o alicerce para o sucesso. No Brasil, isso não é mera formalidade, mas uma estratégia essencial para comprovar autoria, evitar plágios e destravar oportunidades comerciais, como adaptações audiovisuais. Sem essa proteção, sua criação fica vulnerável, arriscando sua carreira e o potencial econômico do projeto.
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="bg-white/5 border border-white/10 p-8 rounded-xl"
+          >
+            <h2 className="text-2xl font-bold text-white mb-6">A Importância de Proteger Sua Obra</h2>
+            <p className="text-gray-400 mb-8 leading-relaxed">
+              No universo das HQs, a proteção da Propriedade Intelectual (PI) é o alicerce para o sucesso. No Brasil, isso não é mera formalidade, mas uma estratégia essencial para comprovar autoria, evitar plágios e destravar oportunidades comerciais.
             </p>
 
-            <h3 className="text-xl font-semibold text-white mb-3">Por Que Proteger Sua Obra?</h3>
-            <p className="text-gray-400 mb-4">
-              Uma HQ é uma obra intelectual protegida pela Lei 9.610/98 (Direitos Autorais). O registro na Fundação Biblioteca Nacional (BN) confere fé pública à sua autoria e data de criação, o que é vital para:
-            </p>
-            <ul className="space-y-3 list-disc list-inside mb-6">
-              <li><strong>Comprovar Originalidade:</strong> Em um mercado saturado, o registro prova que sua HQ é sua, evitando fraudes e plágios.</li>
-              <li><strong>Garantir Exclusividade:</strong> Com o registro, você controla a reprodução, distribuição e adaptação, abrindo portas para parcerias seguras, como as exigidas pela Zilion Force.</li>
-              <li><strong>Facilitar Comercialização:</strong> Bancos, investidores e produtores (ex: ANCINE) priorizam projetos com PI protegida, pois isso mitiga riscos jurídicos e aumenta o valor de mercado.</li>
-            </ul>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-lg font-bold text-zilion-gold-500 mb-3">Por Que Proteger?</h3>
+                <ul className="space-y-3 text-gray-400 text-sm">
+                  <li className="flex items-start gap-2"><span className="text-zilion-gold-500">✓</span> <strong>Comprovar Originalidade:</strong> Evita fraudes e plágios.</li>
+                  <li className="flex items-start gap-2"><span className="text-zilion-gold-500">✓</span> <strong>Garantir Exclusividade:</strong> Controle total sobre adaptações.</li>
+                  <li className="flex items-start gap-2"><span className="text-zilion-gold-500">✓</span> <strong>Facilitar Comercialização:</strong> Essencial para investidores.</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-zilion-gold-500 mb-3">Protegendo Personagens</h3>
+                <ul className="space-y-3 text-gray-400 text-sm">
+                  <li className="flex items-start gap-2"><span className="text-zilion-gold-500">✓</span> <strong>Evitar Cópias:</strong> Proteção de marcas e designs.</li>
+                  <li className="flex items-start gap-2"><span className="text-zilion-gold-500">✓</span> <strong>Gerar Receita:</strong> Licenciamento e royalties.</li>
+                  <li className="flex items-start gap-2"><span className="text-zilion-gold-500">✓</span> <strong>Aumentar Valor:</strong> Facilita fomento via leis de incentivo.</li>
+                </ul>
+              </div>
+            </div>
+          </motion.div>
 
-            <h3 className="text-xl font-semibold text-white mb-3">Protegendo Personagens: Marcas e Desenhos Industriais</h3>
-            <p className="text-gray-400 mb-4">
-              Personagens de HQs são mais que desenhos, são marcas com enorme potencial comercial. Registrá-los no Instituto Nacional da Propriedade Industrial (INPI) é fundamental para:
-            </p>
-            <ul className="space-y-3 list-disc list-inside">
-              <li><strong>Evitar Cópias:</strong> O INPI concede exclusividade, protegendo nomes, logos e designs contra uso indevido em mercadorias, animações ou games.</li>
-              <li><strong>Gerar Receita:</strong> Com proteção, você pode licenciar personagens para editoras e estúdios, criando royalties e expandindo seu universo.</li>
-              <li><strong>Aumentar o Valor:</strong> Em incubadoras como a Zilion Force, personagens protegidos elevam o projeto, facilitando o fomento via FSA ou ProAC.</li>
-            </ul>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl font-bold mb-8 text-center">Outros Critérios de Avaliação</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { title: "Originalidade", desc: "Histórias únicas com forte potencial de adaptação para o mercado audiovisual." },
+                { title: "Qualidade Técnica", desc: "Excelência no roteiro, arte e narrativa apresentados na amostra." },
+                { title: "Visão de Mercado", desc: "Compreensão do público-alvo e do potencial comercial da obra." },
+                { title: "Comprometimento", desc: "Capacidade de execução e dedicação da equipe ou criador." }
+              ].map((item, index) => (
+                <div key={index} className="p-6 bg-black border border-white/10 rounded-lg hover:border-zilion-gold-500/50 transition-colors group">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-zilion-gold-500 transition-colors">{item.title}</h3>
+                  <p className="text-gray-400 text-sm">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
 
-          <h2 className="text-2xl font-semibold mb-4">Outros Critérios de Avaliação</h2>
-          <ul className="list-disc list-inside space-y-4 text-gray-300">
-            <li>
-              <strong>Originalidade e Potencial da Obra:</strong> Buscamos histórias únicas com forte potencial de adaptação para o mercado audiovisual.
-            </li>
-            <li>
-              <strong>Qualidade da Amostra:</strong> A qualidade do roteiro, arte e narrativa apresentados na amostra da HQ será avaliada.
-            </li>
-            <li>
-              <strong>Visão de Mercado:</strong> O criador deve demonstrar uma compreensão básica do público-alvo e do potencial comercial de sua obra.
-            </li>
-            <li>
-              <strong>Dedicação da Equipe:</strong> Avaliamos o comprometimento e a capacidade de execução da equipe ou do criador individual.
-            </li>
-          </ul>
-
-          <div className="text-center mt-10">
+          <div className="text-center pt-10">
             <Link
               href="/submeter"
-              className="rounded-md bg-blue-600 px-6 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500"
+              className="inline-block px-10 py-5 bg-zilion-gold-500 text-black font-bold text-sm uppercase tracking-widest rounded hover:bg-zilion-gold-400 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all duration-300"
             >
               Estou Ciente, Submeter meu Projeto
             </Link>

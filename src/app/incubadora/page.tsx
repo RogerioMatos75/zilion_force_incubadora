@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// Tipos para as propriedades do PhaseSection
+// --- Tipos ---
 type PhaseSectionProps = {
   title: string;
   duration: string;
@@ -14,53 +15,74 @@ type PhaseSectionProps = {
   onToggle: () => void;
 };
 
-// Tipos para as propriedades do TimelineItem
 type TimelineItemProps = {
   time: string;
   title: string;
-  incubatorAction?: string; // O '?' indica que a propriedade é opcional
+  incubatorAction?: string;
   creatorAction?: string;
   deliverable?: string;
 };
 
+// --- Componentes Reestilizados ---
 
 const PhaseSection = ({ title, duration, focus, children, isOpen, onToggle }: PhaseSectionProps) => (
-  <div className="mb-8 border border-gray-700 rounded-lg">
-    <button
+  <motion.div 
+    layout 
+    className="mb-6 bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm"
+  >
+    <motion.button
+      layout
       onClick={onToggle}
-      className="w-full p-6 text-left bg-gray-800 hover:bg-gray-700 rounded-t-lg focus:outline-none"
+      className="w-full p-6 text-left hover:bg-white/5 transition-colors focus:outline-none"
     >
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold text-blue-400">{title}</h2>
-          <p className="text-gray-400 mt-1"><strong>Duração Média:</strong> {duration} | <strong>Foco:</strong> {focus}</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-zilion-gold-500">{title}</h2>
+          <p className="text-gray-400 mt-2 text-sm">
+            <span className="font-semibold text-gray-300">Duração:</span> {duration} | <span className="font-semibold text-gray-300">Foco:</span> {focus}
+          </p>
         </div>
-        <span className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
+        <motion.span 
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="text-zilion-gold-500"
+        >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-        </span>
+        </motion.span>
       </div>
-    </button>
-    {isOpen && (
-      <div className="p-6 bg-gray-900 rounded-b-lg">
-        <div className="relative border-l-2 border-blue-500 ml-4 pl-8 space-y-8">
-          {children}
-        </div>
-      </div>
-    )}
-  </div>
+    </motion.button>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="overflow-hidden"
+        >
+          <div className="p-6 md:p-8 border-t border-white/10">
+            <div className="relative border-l-2 border-zilion-gold-500/30 ml-4 pl-8 space-y-10">
+              {children}
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </motion.div>
 );
 
 const TimelineItem = ({ time, title, incubatorAction, creatorAction, deliverable }: TimelineItemProps) => (
   <div className="relative">
-    <div className="absolute -left-10 w-4 h-4 bg-blue-500 rounded-full mt-1.5"></div>
-    <p className="text-sm font-semibold text-blue-300">{time}</p>
-    <h3 className="text-xl font-bold mt-1">{title}</h3>
-    {incubatorAction && <p className="mt-2 text-sm"><strong className="text-gray-300">Ação da Incubadora:</strong> <span className="text-gray-400">{incubatorAction}</span></p>}
-    {creatorAction && <p className="mt-1 text-sm"><strong className="text-gray-300">Ação do Incubado:</strong> <span className="text-gray-400">{creatorAction}</span></p>}
-    {deliverable && <p className="mt-1 text-sm"><strong className="text-gray-300">Entregável / Meta:</strong> <span className="text-gray-400">{deliverable}</span></p>}
+    <div className="absolute -left-[38px] w-5 h-5 bg-zilion-gold-500 rounded-full mt-1 border-4 border-black box-content"></div>
+    <p className="text-sm font-semibold text-zilion-gold-400 uppercase tracking-wider">{time}</p>
+    <h3 className="text-xl font-bold mt-2 text-white">{title}</h3>
+    {incubatorAction && <p className="mt-3 text-sm text-gray-400"><strong className="text-gray-200">Ação da Incubadora:</strong> {incubatorAction}</p>}
+    {creatorAction && <p className="mt-1 text-sm text-gray-400"><strong className="text-gray-200">Ação do Incubado:</strong> {creatorAction}</p>}
+    {deliverable && <p className="mt-3 font-medium text-sm text-gray-300"><strong className="text-zilion-gold-500">Entregável / Meta:</strong> {deliverable}</p>}
   </div>
 );
 
+// --- Página Principal Refatorada ---
 const PipelinePage = () => {
   const [openSection, setOpenSection] = useState<string | null>('fase0');
 
@@ -69,196 +91,127 @@ const PipelinePage = () => {
   };
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen">
-      <main className="container mx-auto px-4 sm:px-6 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-extrabold">O Pipeline Completo da Incubação</h1>
-          <p className="mt-4 text-lg text-gray-300 max-w-3xl mx-auto">
+    <div className="bg-black text-white">
+      <main className="container mx-auto px-4 sm:px-6 py-16 md:py-24">
+        {/* Cabeçalho */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-zilion-gold-400 to-zilion-gold-600">Pipeline</span> da Incubação
+          </h1>
+          <p className="mt-6 text-lg text-gray-400 max-w-3xl mx-auto">
             Nossa metodologia transparente, fase a fase. Entenda a jornada completa do seu projeto na Zilion Force.
           </p>
-        </div>
+        </motion.div>
 
+        {/* Pipeline */}
         <div className="max-w-4xl mx-auto">
-          {/* FASE 0 */}
           <PhaseSection
-            title="FASE 0: Pré-Incubação"
+            title="FASE 0: PRÉ-INCUBAÇÃO"
             duration="1 a 3 meses"
             focus="Validação e Proteção da PI"
             isOpen={openSection === 'fase0'}
             onToggle={() => handleToggle('fase0')}
           >
-            <TimelineItem
-              time="DIA 0"
-              title="Submissão do Projeto no Terminal do Atlas"
-              creatorAction="Preenche formulário online detalhado e anexa comprovante de registro de direitos autorais da HQ (obrigatório)."
-              deliverable="Submissão completa recebida."
-            />
-            <TimelineItem
-              time="DIAS 1-7"
-              title="Análise Preliminar e 'Crivo do Atlas' de PI"
-              incubatorAction="Equipe realiza a primeira triagem, verificando a documentação de PI, potencial criativo, alinhamento editorial e potencial de mercado."
-              deliverable="Relatório de triagem inicial."
-            />
-            <TimelineItem
-              time="DIAS 8-15"
-              title="Primeira Mentoria (Conceito e PI)"
-              incubatorAction="Reunião inicial com o criador para discussão aprofundada da HQ, personagens, lore e esclarecimento sobre a importância e lacunas no registro da PI."
-              creatorAction="Preparar-se para a mentoria, apresentar a visão do projeto."
-              deliverable="Minuta de Acordo de Confidencialidade (NDA) assinada e ata da mentoria."
-            />
-             <TimelineItem
-              time="DIAS 16-30"
-              title="Workshop 'Fundamentos da Adaptação Audiovisual'"
-              incubatorAction="Oferecer workshop sobre adaptação de HQ para roteiro, pitch e mercado audiovisual brasileiro (leis, fomento, players)."
-              creatorAction="Participar do workshop e revisar o conceito da HQ sob a ótica audiovisual."
-              deliverable="Participação comprovada no workshop e versão aprimorada do pitch."
-            />
-            <TimelineItem
-              time="MÊS 2-3"
-              title="Validação de Mercado e Decisão de Pré-Incubação"
-              incubatorAction="Realizar pesquisa de mercado e uma segunda rodada do 'Crivo do Atlas' para decidir sobre o avanço para a Incubação Plena."
-              creatorAction="Apresentar um 'mini-plano de conceito' atualizado com argumentos de mercado."
-              deliverable="Relatório final da Pré-Incubação e assinatura do Contrato de Incubação para os selecionados."
-            />
+            <TimelineItem time="DIA 0" title="Submissão do Projeto" creatorAction="Preenche formulário detalhado e anexa comprovante de registro de direitos autorais." deliverable="Submissão completa recebida." />
+            <TimelineItem time="DIAS 1-7" title="Análise Preliminar 'Crivo do Atlas'" incubatorAction="Triagem de documentação de PI, potencial criativo e alinhamento editorial." deliverable="Relatório de triagem inicial." />
+            <TimelineItem time="DIAS 8-15" title="Mentoria de Conceito e PI" incubatorAction="Reunião com criador para discussão da HQ, lore e lacunas no registro da PI." deliverable="NDA assinado e ata da mentoria." />
+            <TimelineItem time="DIAS 16-30" title="Workshop 'Fundamentos da Adaptação'" incubatorAction="Workshop sobre adaptação de HQ para roteiro audiovisual e mercado." deliverable="Participação comprovada e pitch aprimorado." />
+            <TimelineItem time="MÊS 2-3" title="Decisão de Pré-Incubação" incubatorAction="Pesquisa de mercado e segunda rodada do 'Crivo do Atlas' para decisão final." deliverable="Contrato de Incubação assinado pelos selecionados." />
           </PhaseSection>
 
-          {/* FASE 1 */}
           <PhaseSection
-            title="FASE 1: Incubação Plena"
+            title="FASE 1: INCUBAÇÃO PLENA"
             duration="6 a 12 meses"
             focus="Estruturação do Negócio e Produção"
             isOpen={openSection === 'fase1'}
             onToggle={() => handleToggle('fase1')}
           >
-            <TimelineItem
-              time="MÊS 1"
-              title="Kick-off e Mapeamento de Equipe"
-              incubatorAction="Reunião formal de kick-off, apresentação de mentores e introdução às ferramentas de gestão."
-              creatorAction="Mapear necessidades de equipe (roteirista, artista, etc.) e iniciar recrutamento com apoio da incubadora."
-              deliverable="Plano de trabalho detalhado do projeto para o período de incubação."
-            />
-            <TimelineItem
-              time="MÊS 1-2"
-              title="Mentoria em 'Gestão de PI na Prática' e 'Produção Executiva'"
-              incubatorAction="Mentoria focada em contratos, direitos de imagem, licenças e registro de PBI na ANCINE. Curso sobre orçamento e editais."
-              creatorAction="Regularizar contratos com equipe, elaborar plano de negócios e de produção executiva."
-              deliverable="Registro da produtora como PBI na ANCINE e plano de negócios 1.0."
-            />
-            <TimelineItem
-              time="MÊS 3-6"
-              title="Desenvolvimento Criativo Aprofundado e Prototipagem"
-              incubatorAction="Mentoria contínua para roteiro, direção de arte e construção de mundo."
-              creatorAction="Produção de material demonstrativo (primeiros capítulos da HQ, storyboard animado, teaser, pitch deck)."
-              deliverable="Protótipo ou 'piloto' da HQ/AV, pitch deck audiovisual completo."
-            />
-            <TimelineItem
-              time="MÊS 7-9"
-              title="Captação de Recursos e Acesso ao Fomento"
-              incubatorAction="Mentoria e workshops sobre como preparar projetos para chamadas do FSA (ANCINE/BNDES), leis de incentivo e rodadas de investimento."
-              creatorAction="Submeter projetos a editais, participar de rodadas de pitch, buscar investidores."
-              deliverable="Projetos submetidos a pelo menos 2 editais/chamadas."
-            />
-             <TimelineItem
-              time="MÊS 10-12"
-              title="Análise de Viabilidade e Preparação para Mercado"
-              incubatorAction="Revisão crítica do plano de negócios e de produção, análise de riscos e estratégias de entrada no mercado."
-              creatorAction="Finalizar plano de negócios, ajustar projeções financeiras, preparar material para comercialização."
-              deliverable="Plano de negócios final, plano de marketing e distribuição preliminar."
-            />
+            <TimelineItem time="MÊS 1" title="Kick-off e Mapeamento de Equipe" incubatorAction="Reunião formal, apresentação de mentores e ferramentas." deliverable="Plano de trabalho detalhado do projeto." />
+            <TimelineItem time="MÊS 1-2" title="Mentoria em Gestão e Produção" incubatorAction="Foco em contratos, direitos, licenças e registro PBI na ANCINE." deliverable="Registro da produtora como PBI na ANCINE." />
+            <TimelineItem time="MÊS 3-6" title="Desenvolvimento e Prototipagem" creatorAction="Produção de material demonstrativo (teaser, pitch deck, storyboard)." deliverable="Protótipo ou 'piloto' do projeto e pitch deck completo." />
+            <TimelineItem time="MÊS 7-9" title="Captação de Recursos" incubatorAction="Mentoria sobre como preparar projetos para chamadas do FSA e leis de incentivo." deliverable="Projetos submetidos a pelo menos 2 editais." />
+            <TimelineItem time="MÊS 10-12" title="Preparação para Mercado" incubatorAction="Revisão crítica do plano de negócios e estratégias de entrada no mercado." deliverable="Plano de negócios e marketing finalizados." />
           </PhaseSection>
 
-          {/* FASE 2 */}
           <PhaseSection
-            title="FASE 2: Pós-Incubação"
-            duration="6 a 12 meses (pós-incubação)"
+            title="FASE 2: PÓS-INCUBAÇÃO"
+            duration="6 a 12 meses"
             focus="Comercialização e Escala"
             isOpen={openSection === 'fase2'}
             onToggle={() => handleToggle('fase2')}
           >
-             <TimelineItem
-              time="MÊS 1-3"
-              title="Lançamento e Estratégia de Distribuição"
-              incubatorAction="Apoio na negociação de contratos com plataformas de streaming, TV e cinemas. Consultoria em marketing de lançamento."
-              creatorAction="Lançar a HQ e/ou adaptação audiovisual, executar o plano de marketing."
-              deliverable="Contrato de distribuição/exibição assinado, campanha de marketing em andamento."
-            />
-            <TimelineItem
-              time="MÊS 4-6"
-              title="Gestão de Direitos e Licenciamento (Novas Janelas)"
-              incubatorAction="Mentoria em estratégias de licenciamento de PI para outros produtos (merchandising, jogos, etc.) e expansão internacional."
-              creatorAction="Explorar oportunidades de licenciamento, gerenciar direitos, buscar novos mercados."
-              deliverable="Novas parcerias de licenciamento ou vendas internacionais."
-            />
-            <TimelineItem
-              time="MÊS 7-9"
-              title="Monitoramento e Otimização"
-              incubatorAction="Acompanhamento do desempenho do projeto (audiência, receita, ROI), consultoria para otimização contínua."
-              creatorAction="Analisar dados, implementar melhorias, planejar futuras temporadas/expansões."
-              deliverable="Relatórios de performance, plano de otimização."
-            />
-            <TimelineItem
-              time="MÊS 10-12"
-              title="Graduação e Sustentabilidade"
-              incubatorAction="Avaliação final do sucesso do projeto e da empresa incubada. Formalização da graduação."
-              creatorAction="A empresa está consolidada e autossuficiente."
-              deliverable="Empresa graduada com modelo de negócio sustentável e escalável. Sucesso no mercado e/ou Certificado de Produto Brasileiro (CPB) obtido."
-            />
+            <TimelineItem time="MÊS 1-3" title="Lançamento e Distribuição" incubatorAction="Apoio na negociação de contratos com plataformas de streaming, TV, etc." deliverable="Contrato de distribuição/exibição assinado." />
+            <TimelineItem time="MÊS 4-6" title="Gestão de Direitos e Licenciamento" incubatorAction="Mentoria em estratégias de licenciamento para outros produtos e expansão internacional." deliverable="Novas parcerias de licenciamento." />
+            <TimelineItem time="MÊS 7-9" title="Monitoramento e Otimização" incubatorAction="Acompanhamento do desempenho do projeto (audiência, receita, ROI)." deliverable="Relatórios de performance e plano de otimização." />
+            <TimelineItem time="MÊS 10-12" title="Graduação e Sustentabilidade" incubatorAction="Avaliação final do sucesso do projeto e da empresa incubada." deliverable="Empresa graduada com modelo de negócio sustentável." />
           </PhaseSection>
         </div>
 
-        <div className="text-center mt-16">
-          <Link href="/submeter" className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-            Pronto para começar sua jornada? Submeta seu projeto
-          </Link>
+        {/* CTA Final */}
+        <div className="text-center mt-20">
+            <Link href="/submeter" className="group relative inline-block px-8 py-4 bg-zilion-gold-500 text-black font-bold text-sm uppercase tracking-widest rounded overflow-hidden hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all duration-300">
+                <span className="relative z-10">Submeter Projeto Agora</span>
+                <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            </Link>
         </div>
 
-        {/* Seção de Detalhes Estratégicos */}
-        <div className="max-w-4xl mx-auto mt-20 text-left">
-            <div className="bg-gray-800 p-8 rounded-lg shadow-lg">
-                <h2 className="text-3xl font-bold text-blue-400 mb-6 text-center">Nossa Estratégia e Metas</h2>
+        {/* Seção de Detalhes Estratégicos Reestilizada */}
+        <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="max-w-4xl mx-auto mt-24"
+        >
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12 backdrop-blur-sm">
+                <h2 className="text-3xl font-bold text-zilion-gold-500 mb-8 text-center">Nossa Estratégia e Metas</h2>
                 
-                {/* Objetivos */}
-                <div className="mb-8">
-                    <h3 className="text-2xl font-semibold text-white mb-3">Nossos Objetivos</h3>
-                    <ul className="list-disc list-inside space-y-2 text-gray-300">
-                        <li><strong>Estrutura Legal Inabalável:</strong> Tornar a Zilion Force uma entidade juridicamente robusta, com governança clara e capacidade formal de celebrar contratos.</li>
-                        <li><strong>Códice Operacional Único:</strong> Criar um documento-mestre que rege todo o ecossistema, garantindo consistência criativa, jurídica e metodológica.</li>
-                        <li><strong>Hub Operacional Online:</strong> Transformar o site em um hub operacional, incluindo uma vitrine e um formulário de submissão.</li>
-                        <li><strong>Padronização de Conteúdo:</strong> Padronizar a produção de conteúdo institucional em todas as plataformas para estabelecer autoridade no mercado.</li>
-                        <li><strong>Referência Nacional:</strong> Consolidar 10 projetos incubados e desenvolver 2 pilotos audiovisuais até 2026.</li>
-                    </ul>
-                </div>
+                <div className="grid md:grid-cols-2 gap-12">
+                    {/* Coluna Esquerda */}
+                    <div className="space-y-8">
+                        <div>
+                            <h3 className="text-xl font-semibold text-white mb-3">Nossos Objetivos</h3>
+                            <ul className="list-disc list-inside space-y-2 text-gray-400 text-sm">
+                                <li>Estrutura Legal robusta e governança clara.</li>
+                                <li>Códice Operacional para consistência do ecossistema.</li>
+                                <li>Hub Operacional Online com vitrine e submissão.</li>
+                                <li>Padronização de conteúdo para estabelecer autoridade.</li>
+                                <li>Consolidar 10 projetos e 2 pilotos até 2026.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-semibold text-white mb-3">Marcos do Projeto</h3>
+                            <ul className="list-disc list-inside space-y-2 text-gray-400 text-sm">
+                                <li>Estrutura Legal: Certidão da Junta Comercial e INPI.</li>
+                                <li>Códice do Atlas: Versão 1.0 aprovada.</li>
+                                <li>Plataforma Central: Site no ar com NDA automático.</li>
+                                <li>Forja de conteúdo: 3 meses de publicação consistente.</li>
+                                <li>Plano de Dispersão: Junho de 2026, com 1º piloto filmado.</li>
+                            </ul>
+                        </div>
+                    </div>
 
-                {/* Especificações */}
-                <div className="mb-8">
-                    <h3 className="text-2xl font-semibold text-white mb-3">As 5 Camadas do Atlas (Especificações)</h3>
-                    <p className="text-gray-400 mb-4">O plano de fundação está dividido em 5 áreas principais, com foco em execução em até 90 dias para a estrutura básica:</p>
-                    <ul className="list-disc list-inside space-y-2 text-gray-300">
-                        <li><strong>ESTRUTURA LEGAL (O Protocolo de Fundação):</strong> Consultoria jurídica, validação de Contrato Social, depósito de marca no INPI e elaboração de Regulamento Interno.</li>
-                        <li><strong>CÓDICE DO ATLAS (A Bíblia do Universo):</strong> Consolidação de todos os documentos mestres em um único local.</li>
-                        <li><strong>PLATAFORMA CENTRAL (O Terminal):</strong> Estruturação do site definitivo com navegação focada na Incubadora e sistema de submissão.</li>
-                        <li><strong>FORJA DE CONTEÚDO (A Linha de Montagem):</strong> Definição de um pipeline institucional de produção de conteúdo.</li>
-                        <li><strong>PLANO DE DISPERSÃO (A Rede Neural Narrativa):</strong> Estratégia de expansão focada em resultados, parcerias com ANCINE/FSA e canais prioritários.</li>
-                    </ul>
-                </div>
-
-                {/* Marcos */}
-                <div>
-                    <h3 className="text-2xl font-semibold text-white mb-3">Marcos do Projeto</h3>
-                    <ul className="list-disc list-inside space-y-2 text-gray-300">
-                        <li><strong>Estrutura Legal:</strong> Certidão da Junta Comercial, protocolo do INPI e Regulamento Interno assinado.</li>
-                        <li><strong>Códice do Atlas:</strong> Códice versão 1.0 aprovado pelos sócios e equipe jurídica.</li>
-                        <li><strong>Plataforma Central:</strong> Site no ar com formulário de submissão funcional e NDA automático.</li>
-                        <li><strong>Forja de conteúdo:</strong> 3 meses consecutivos de publicação sem falhas e crescimento orgânico.</li>
-                        <li><strong>Plano de Dispersão:</strong> Junho de 2026, com o primeiro projeto incubado tendo um contrato FSA ou piloto filmado.</li>
-                    </ul>
+                    {/* Coluna Direita */}
+                    <div>
+                        <h3 className="text-xl font-semibold text-white mb-3">As 5 Camadas do Atlas</h3>
+                        <p className="text-gray-400 mb-4 text-sm">Foco em execução em até 90 dias para a estrutura básica:</p>
+                        <ul className="space-y-4 text-gray-400 text-sm">
+                            <li><strong>PROTOCOLO DE FUNDAÇÃO:</strong> Validação de Contrato Social e marca no INPI.</li>
+                            <li><strong>CÓDICE DO ATLAS:</strong> Consolidação de todos os documentos mestres.</li>
+                            <li><strong>O TERMINAL:</strong> Estruturação do site com sistema de submissão.</li>
+                            <li><strong>A LINHA DE MONTAGEM:</strong> Definição de pipeline de produção de conteúdo.</li>
+                            <li><strong>A REDE NEURAL NARRATIVA:</strong> Estratégia de expansão com foco em parcerias.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
       </main>
     </div>
   );
 };
 
 export default PipelinePage;
-

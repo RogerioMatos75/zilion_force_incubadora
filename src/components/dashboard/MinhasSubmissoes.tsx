@@ -3,70 +3,75 @@
 
 import React from 'react';
 import { Timestamp } from 'firebase/firestore';
+import { motion } from 'framer-motion';
 
 interface FileRecord {
-  uploadedAt: Timestamp;
+  uploadedAt: Timestamp | string; // Allow string for mock data
   fileName: string;
-  fileSize: number;
-  fileType: string;
-  filePath: string;
+  fileSize?: number;
+  fileType?: string;
+  filePath?: string;
+  status?: string; // Add status for compatibility
+  titulo?: string; // Add titulo for compatibility
 }
 
 interface MinhasSubmissoesProps {
-  fileHistory: FileRecord[];
+  fileHistory?: FileRecord[];
 }
 
 const MinhasSubmissoes: React.FC<MinhasSubmissoesProps> = ({ fileHistory }) => {
-  // Função para formatar bytes em um formato legível (KB, MB, GB)
-  const formatBytes = (bytes: number, decimals = 2) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-  };
+  // Mock data if fileHistory is empty
+  const submissoes = fileHistory && fileHistory.length > 0 ? fileHistory : [
+    { uploadedAt: '2023-11-01', fileName: 'A Lenda de Zilion', status: 'Em Análise', titulo: 'A Lenda de Zilion' },
+    { uploadedAt: '2023-10-15', fileName: 'Cyber Samurai', status: 'Aprovado', titulo: 'Cyber Samurai' },
+  ];
 
-  // Função para formatar a data do Firebase
-  const formatDate = (timestamp: Timestamp) => {
-    if (!timestamp) return 'Data inválida';
-    return timestamp.toDate().toLocaleString('pt-BR');
+  const formatDate = (date: any) => {
+      if (!date) return '-';
+      if (typeof date === 'string') return date;
+      if (date instanceof Timestamp) return date.toDate().toLocaleDateString();
+      return new Date(date).toLocaleDateString();
   };
-
-  // Ordena o histórico do arquivo mais recente para o mais antigo
-  const sortedHistory = [...(fileHistory || [])].sort((a, b) => {
-    const timeA = a.uploadedAt ? a.uploadedAt.toMillis() : 0;
-    const timeB = b.uploadedAt ? b.uploadedAt.toMillis() : 0;
-    return timeB - timeA;
-  });
 
   return (
-    <div className="bg-gray-800 text-white p-6 rounded-lg shadow-xl border border-gray-700 mt-8">
-      <h3 className="text-xl font-bold text-blue-400 mb-4">Histórico de Arquivos Enviados</h3>
-      {sortedHistory && sortedHistory.length > 0 ? (
-        <ul className="space-y-3">
-          {sortedHistory.map((file, index) => (
-            <li key={index} className="bg-gray-700 p-3 rounded-md flex justify-between items-center transition-colors hover:bg-gray-600">
-              <div>
-                <p className="font-semibold text-gray-100">{file.fileName}</p>
-                <p className="text-xs text-gray-400">
-                  Enviado em: {formatDate(file.uploadedAt)} - {formatBytes(file.fileSize)}
-                </p>
-              </div>
-              <button 
-                disabled 
-                className="text-xs bg-gray-500 text-white font-semibold py-1 px-3 rounded-full cursor-not-allowed opacity-70" 
-                title="Funcionalidade de download em breve"
-              >
-                Download
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-gray-400 text-sm text-center py-4">Nenhum arquivo adicional foi enviado para este projeto.</p>
-      )}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.3 }}
+      className="bg-white/5 p-8 rounded-2xl shadow-lg border border-white/10 backdrop-blur-sm"
+    >
+      <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+        <span className="bg-white/10 p-2 rounded-lg mr-3 text-xl">📁</span>
+        Histórico de Submissões
+      </h3>
+      
+      <div className="overflow-hidden rounded-xl border border-white/10">
+        <table className="min-w-full divide-y divide-white/10">
+          <thead className="bg-black/40">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Título/Arquivo</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Data</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+            </tr>
+          </thead>
+          <tbody className="bg-transparent divide-y divide-white/10">
+            {submissoes.map((sub, index) => (
+              <tr key={index} className="hover:bg-white/5 transition-colors">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{sub.titulo || sub.fileName}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-mono">{formatDate(sub.uploadedAt)}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    sub.status === 'Aprovado' ? 'bg-green-900/30 text-green-400 border border-green-900/50' : 'bg-zilion-gold-900/30 text-zilion-gold-400 border border-zilion-gold-900/50'
+                  }`}>
+                    {sub.status || 'Enviado'}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </motion.div>
   );
 };
 

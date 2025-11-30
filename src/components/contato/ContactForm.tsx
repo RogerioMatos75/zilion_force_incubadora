@@ -1,5 +1,7 @@
 "use client";
 
+import React from 'react';
+
 const ContactForm = () => {
   // Futuramente, aqui podemos adicionar o estado para os campos
   // e a lógica de envio do formulário.
@@ -10,22 +12,40 @@ const ContactForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="mb-4">
-        <label htmlFor="name" className="block text-gray-300 mb-2">Nome</label>
-        <input type="text" id="name" name="name" className="w-full p-3 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <label htmlFor="name" className="block text-xs font-bold text-zilion-gold-500 uppercase tracking-widest mb-2">Nome</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          className="w-full p-4 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-zilion-gold-500 focus:ring-1 focus:ring-zilion-gold-500 transition-all outline-none"
+          placeholder="Seu nome completo"
+        />
       </div>
-      <div className="mb-4">
-        <label htmlFor="email" className="block text-gray-300 mb-2">Email</label>
-        <input type="email" id="email" name="email" className="w-full p-3 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <div>
+        <label htmlFor="email" className="block text-xs font-bold text-zilion-gold-500 uppercase tracking-widest mb-2">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          className="w-full p-4 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-zilion-gold-500 focus:ring-1 focus:ring-zilion-gold-500 transition-all outline-none"
+          placeholder="seu@email.com"
+        />
       </div>
-      <div className="mb-6">
-        <label htmlFor="message" className="block text-gray-300 mb-2">Mensagem</label>
-        <textarea id="message" name="message" rows={5} className="w-full p-3 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+      <div>
+        <label htmlFor="message" className="block text-xs font-bold text-zilion-gold-500 uppercase tracking-widest mb-2">Mensagem</label>
+        <textarea 
+          id="message" 
+          name="message" 
+          rows={5} 
+          className="w-full p-4 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-zilion-gold-500 focus:ring-1 focus:ring-zilion-gold-500 transition-all outline-none resize-none"
+          placeholder="Como podemos ajudar?"
+        ></textarea>
       </div>
       <button
         type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md transition duration-300"
+        className="w-full bg-zilion-gold-500 hover:bg-zilion-gold-400 text-black font-bold py-4 px-6 rounded-lg transition-all duration-300 uppercase tracking-widest text-sm shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)]"
       >
         Enviar Mensagem
       </button>

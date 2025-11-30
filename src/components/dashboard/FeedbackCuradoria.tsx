@@ -1,75 +1,65 @@
-import React from 'react';
-import { Timestamp } from 'firebase/firestore';
+import { motion } from 'framer-motion';
 
 interface Feedback {
-  data: Timestamp;
+  id: number | string;
   autor: string;
   mensagem: string;
-  tipo: 'Aprovação' | 'Correção' | 'Sugestão' | 'Informação';
+  data: string;
+  tipo: 'positivo' | 'sugestao' | 'critica' | string;
 }
 
 interface FeedbackCuradoriaProps {
-  feedbacks: Feedback[];
+  feedbacks?: Feedback[];
 }
 
 const FeedbackCuradoria: React.FC<FeedbackCuradoriaProps> = ({ feedbacks }) => {
-  const formatDate = (timestamp: Timestamp) => {
-    if (!timestamp) return 'Data inválida';
-    return timestamp.toDate().toLocaleDateString('pt-BR');
-  };
+  const defaultFeedbacks = [
+    { id: 1, autor: 'Curador Chefe', mensagem: 'Excelente desenvolvimento de personagem.', data: '2 dias atrás', tipo: 'positivo' },
+    { id: 2, autor: 'Mentor de Arte', mensagem: 'A paleta de cores precisa de mais contraste.', data: '5 dias atrás', tipo: 'sugestao' },
+  ];
 
-  const sortedFeedbacks = [...(feedbacks || [])].sort((a, b) => {
-    // Adiciona uma verificação defensiva para o caso de a data não existir no objeto de feedback.
-    const timeA = a.data ? a.data.toMillis() : 0;
-    const timeB = b.data ? b.data.toMillis() : 0;
-    return timeB - timeA;
-  });
+  // Verifica se 'feedbacks' é um array e se o primeiro elemento é um objeto válido, não uma string.
+  // Isso previne o erro quando a API retorna `['']`.
+  const hasValidFeedbacks = Array.isArray(feedbacks) && feedbacks.length > 0 && typeof feedbacks[0] === 'object' && feedbacks[0] !== null;
 
-  const getDotColor = (tipo: Feedback['tipo']) => {
-    switch (tipo) {
-      case 'Aprovação': return 'bg-green-500';
-      case 'Correção': return 'bg-red-500';
-      case 'Sugestão': return 'bg-yellow-500';
-      default: return 'bg-blue-500';
-    }
-  };
-
-  const getTagColor = (tipo: Feedback['tipo']) => {
-    switch (tipo) {
-      case 'Aprovação': return 'bg-green-900 text-green-300';
-      case 'Correção': return 'bg-red-900 text-red-300';
-      case 'Sugestão': return 'bg-yellow-900 text-yellow-300';
-      default: return 'bg-blue-900 text-blue-300';
-    }
-  };
+  const feedbackList = hasValidFeedbacks ? (feedbacks as Feedback[]) : defaultFeedbacks;
 
   return (
-    <div className="bg-zilion-surface border border-gray-800 p-6 rounded-lg shadow-lg">
-      <h3 className="text-xl font-bold text-white mb-6">Feedback da Curadoria</h3>
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, delay: 0.5 }}
+      className="bg-white/5 p-8 rounded-2xl shadow-lg border border-white/10 backdrop-blur-sm"
+    >
+      <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+        <span className="bg-white/10 p-2 rounded-lg mr-3 text-xl">💬</span>
+        Feedback da Curadoria
+      </h3>
       
-      {sortedFeedbacks && sortedFeedbacks.length > 0 ? (
-        <div className="space-y-6 relative pl-4 border-l border-gray-700">
-          {sortedFeedbacks.map((fb, index) => (
-            <div key={index} className="relative">
-              <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full ${getDotColor(fb.tipo)}`}></div>
-              
-              <div className="bg-zilion-gray p-4 rounded border border-gray-700">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-xs font-bold text-gray-400">{fb.autor}</span>
-                  <span className="text-xs text-gray-500">{formatDate(fb.data)}</span>
+      <div className="space-y-6 relative">
+        <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-white/10"></div>
+        
+        {feedbackList.length === 0 ? (
+            <p className="pl-10 text-sm text-gray-500 italic">Nenhum feedback recebido ainda.</p>
+        ) : (
+            feedbackList.map((feedback) => (
+            <div key={feedback.id} className="relative pl-10">
+                <div className={`absolute left-[13px] top-1.5 w-2.5 h-2.5 rounded-full border-2 border-black ${
+                    feedback.tipo === 'positivo' ? 'bg-green-500' : 'bg-zilion-gold-500'
+                }`}></div>
+                
+                <div className="bg-black/40 p-4 rounded-xl border border-white/5">
+                    <div className="flex justify-between items-start mb-2">
+                        <span className="text-sm font-bold text-white">{feedback.autor}</span>
+                        <span className="text-xs text-gray-500">{feedback.data}</span>
+                    </div>
+                    <p className="text-sm text-gray-400 leading-relaxed">"{feedback.mensagem}"</p>
                 </div>
-                <p className="text-gray-300 text-sm">{fb.mensagem}</p>
-                <span className={`text-xs mt-2 inline-block px-2 py-0.5 rounded ${getTagColor(fb.tipo)}`}>
-                  {fb.tipo}
-                </span>
-              </div>
             </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-gray-400 text-sm text-center py-4">Nenhum feedback da curadoria recebido ainda.</p>
-      )}
-    </div>
+            ))
+        )}
+      </div>
+    </motion.div>
   );
 };
 

@@ -131,9 +131,9 @@ const AdicionarDocumento: React.FC<AdicionarDocumentoProps> = ({ submissionId })
               className="mt-1 block w-full text-sm text-gray-500
                           file:mr-4 file:py-2 file:px-4
                           file:rounded-md file:border-0
-                          file:text-sm file:font-semibold
-                          file:bg-indigo-50 file:text-indigo-700
-                          hover:file:bg-indigo-100"
+                          file:text-sm file:font-bold file:uppercase
+                          file:bg-zilion-gold-500 file:text-black
+                          hover:file:bg-zilion-gold-400"
               disabled={isUploading}
             />
           </div>
@@ -146,7 +146,7 @@ const AdicionarDocumento: React.FC<AdicionarDocumentoProps> = ({ submissionId })
             <button
               type="submit"
               disabled={isUploading}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-bold uppercase tracking-widest rounded-md shadow-sm text-black bg-zilion-gold-500 hover:bg-zilion-gold-400 hover:shadow-[0_0_15px_rgba(212,175,55,0.4)] disabled:bg-gray-400 transition-all duration-300"
             >
               {isUploading ? 'Enviando...' : 'Adicionar Documento'}
             </button>

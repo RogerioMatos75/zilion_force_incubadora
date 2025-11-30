@@ -1,68 +1,112 @@
-// src/app/investidores/page.tsx
+'use client';
+
 import Link from 'next/link';
 import React from 'react';
+import { motion } from 'framer-motion';
 
 const InvestidoresPage = () => {
   return (
-    <div className="bg-gray-900 text-white min-h-screen">
-      <main className="container mx-auto px-6 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-extrabold">Um Convite para Investidores Anjo</h1>
-          <p className="mt-4 text-lg text-gray-300 max-w-3xl mx-auto">
+    <div className="bg-black text-white min-h-screen relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-zilion-gold-500/10 rounded-full blur-[120px] -mr-32 -mt-32 pointer-events-none"></div>
+      
+      <main className="container mx-auto px-6 py-24 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-20"
+        >
+          <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter">
+            Investimento <span className="text-transparent bg-clip-text bg-gradient-to-r from-zilion-gold-300 to-zilion-gold-600">Anjo</span>
+          </h1>
+          <p className="text-xl text-gray-400 max-w-4xl mx-auto font-light leading-relaxed">
             Descubra por que a Zilion Force Comics Incubadora representa uma oportunidade estratégica única no crescente mercado audiovisual brasileiro.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="max-w-4xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg">
+        <div className="max-w-5xl mx-auto space-y-16">
           
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-blue-400 mb-4">Por Que a Zilion Force é um Investimento Anjo Estratégico?</h2>
-            <p className="text-gray-300 leading-relaxed">
-              A proposta da Zilion Force foi estruturada como um Plano Executivo de alto impacto que mitiga riscos jurídicos, demonstra profissionalismo na gestão e aponta para um mercado com grande potencial de valorização: o audiovisual.
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="bg-white/5 backdrop-blur-md p-10 rounded-2xl border border-white/10 shadow-2xl relative overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-zilion-gold-500 to-transparent opacity-50"></div>
+            <h2 className="text-3xl font-bold text-white mb-6">Estratégia de Alto Impacto</h2>
+            <p className="text-gray-300 leading-relaxed text-lg">
+              A proposta da Zilion Force foi estruturada como um Plano Executivo de alto impacto que mitiga riscos jurídicos, demonstra profissionalismo na gestão e aponta para um mercado com grande potencial de valorização: o audiovisual. Nosso projeto atende aos três critérios fundamentais buscados em novos empreendimentos:
             </p>
-            <p className="mt-4 text-gray-300 leading-relaxed">
-              Nosso projeto é altamente atrativo para Investidores Anjo, pois atende aos três critérios fundamentais buscados em novos empreendimentos:
-            </p>
-          </div>
+          </motion.div>
           
-          <div className="space-y-8">
+          <div className="grid md:grid-cols-3 gap-8">
             {/* 1. Potencial de Alto Crescimento */}
-            <div className="border-l-4 border-blue-500 pl-6">
-              <h3 className="text-2xl font-semibold text-white">1. Potencial de Alto Crescimento (Alto Risco/Alta Recompensa)</h3>
-              <p className="mt-2 text-gray-400">
-                O foco em ser a <strong>"primeira incubadora brasileira especializada em PI de HQs para Audiovisual"</strong> estabelece um nicho de mercado pioneiro. Isso nos posiciona em um setor com potencial de spin-off para um estúdio de produção próprio, gerando retornos exponenciais.
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="bg-black border border-white/10 p-8 rounded-xl hover:border-zilion-gold-500/50 transition-all duration-300 group"
+            >
+              <div className="text-zilion-gold-500 text-4xl font-bold mb-4 opacity-50 group-hover:opacity-100 transition-opacity">01</div>
+              <h3 className="text-xl font-bold text-white mb-4 group-hover:text-zilion-gold-500 transition-colors">Alto Crescimento</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                O foco em ser a <strong>"primeira incubadora brasileira especializada em PI de HQs para Audiovisual"</strong> estabelece um nicho pioneiro com potencial de spin-off para um estúdio próprio.
               </p>
-            </div>
+            </motion.div>
 
             {/* 2. Segurança Jurídica */}
-            <div className="border-l-4 border-blue-500 pl-6">
-              <h3 className="text-2xl font-semibold text-white">2. Segurança Jurídica e Proteção de Ativos</h3>
-              <p className="mt-2 text-gray-400">
-                A <strong>"Estrutura Legal Inabalável"</strong> e o foco na Propriedade Intelectual (PI) protegida são cruciais. Investidores precisam da segurança de que o ativo principal (as HQs e seus personagens) está protegido e que a empresa possui capacidade legal para celebrar contratos, garantindo participação nos lucros futuros.
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="bg-black border border-white/10 p-8 rounded-xl hover:border-zilion-gold-500/50 transition-all duration-300 group"
+            >
+              <div className="text-zilion-gold-500 text-4xl font-bold mb-4 opacity-50 group-hover:opacity-100 transition-opacity">02</div>
+              <h3 className="text-xl font-bold text-white mb-4 group-hover:text-zilion-gold-500 transition-colors">Segurança Jurídica</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                A <strong>"Estrutura Legal Inabalável"</strong> e o foco na PI protegida garantem que o ativo principal (as HQs) esteja seguro, permitindo contratos sólidos e participação nos lucros.
               </p>
-            </div>
+            </motion.div>
 
             {/* 3. Execução e Resultados Mensuráveis */}
-            <div className="border-l-4 border-blue-500 pl-6">
-              <h3 className="text-2xl font-semibold text-white">3. Execução e Resultados Mensuráveis</h3>
-              <p className="mt-2 text-gray-400">
-                A divisão do nosso plano em <strong>5 Camadas do Atlas</strong> (Estrutura Legal, Códice, Plataforma, etc.) e os <strong>Marcos de Validação</strong> com prazos definidos demonstram que não vendemos apenas uma ideia, mas um plano de negócios claro com metas verificáveis.
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="bg-black border border-white/10 p-8 rounded-xl hover:border-zilion-gold-500/50 transition-all duration-300 group"
+            >
+              <div className="text-zilion-gold-500 text-4xl font-bold mb-4 opacity-50 group-hover:opacity-100 transition-opacity">03</div>
+              <h3 className="text-xl font-bold text-white mb-4 group-hover:text-zilion-gold-500 transition-colors">Execução Mensurável</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                As <strong>5 Camadas do Atlas</strong> e os Marcos de Validação demonstram um plano de negócios claro, com metas verificáveis e prazos definidos, indo além de apenas uma ideia.
               </p>
-            </div>
+            </motion.div>
           </div>
 
-          <div className="text-center mt-12 pt-8 border-t border-gray-700">
-            <h2 className="text-2xl font-semibold text-white">Faça Parte desta Jornada</h2>
-            <p className="mt-4 text-lg text-gray-300">
-              Convidamos investidores e parceiros institucionais a acompanhar nossa jornada e a se preparar para a abertura do Crivo do Atlas, que buscará as próximas grandes narrativas brasileiras para o audiovisual.
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center pt-16 border-t border-white/10"
+          >
+            <h2 className="text-3xl font-bold text-white mb-6">Faça Parte desta Jornada</h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-10">
+              Convidamos investidores e parceiros institucionais a acompanhar nossa jornada e a se preparar para a abertura do Crivo do Atlas.
             </p>
             <Link
-              href="/contato"
-              className="mt-6 inline-block rounded-md bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500"
+              href="https://zilion-force-comics-incu-4q7dru7.gamma.site/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-8 py-4 bg-zilion-gold-500 text-black font-bold uppercase tracking-widest rounded hover:bg-zilion-gold-400 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all duration-300 transform hover:-translate-y-1"
             >
-              Entre em Contato
+              Pitch Deck
             </Link>
-          </div>
+          </motion.div>
 
         </div>
       </main>

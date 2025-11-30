@@ -1,74 +1,73 @@
 // src/components/dashboard/MeuProjeto.tsx
 import React from 'react';
 import { Timestamp } from 'firebase/firestore';
+import { motion } from 'framer-motion';
 
-// Define a interface para uma única etapa do pipeline
-interface PipelineStage {
-  etapa: string;
-  data: Timestamp;
-}
-
-// Define a interface para os dados da submissão que este componente espera
 interface SubmissionData {
-  hqTitle: string;
-  etapaCerne: string;
-  etapaPipeline: PipelineStage[];
+  tituloObra: string;
+  genero: string;
+  progresso?: number;
+  faseAtual?: string;
+  proximoDeadline?: string;
 }
 
 interface MeuProjetoProps {
-  submission: SubmissionData;
+  submission?: SubmissionData;
 }
 
 const MeuProjeto: React.FC<MeuProjetoProps> = ({ submission }) => {
-  // Converte a data do Firebase para um formato legível
-  const formatDate = (timestamp: Timestamp) => {
-    if (!timestamp) return 'Data pendente';
-    return timestamp.toDate().toLocaleDateString('pt-BR');
-  };
+  // Mock data if submission is not provided or fields are missing
+  const titulo = submission?.tituloObra || 'A Lenda de Zilion';
+  const genero = submission?.genero || 'Fantasia / Ação';
+  const progresso = submission?.progresso || 35;
+  const faseAtual = submission?.faseAtual || 'Desenvolvimento de Personagens';
+  const proximoDeadline = submission?.proximoDeadline || '15 de Dezembro';
 
   return (
-    <div className="bg-zilion-surface text-white p-6 rounded-lg shadow-lg border border-gray-800 relative overflow-hidden">
-      {/* Decorative Glow */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-zilion-cyan/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-
-      <h3 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-zilion-cyan to-zilion-purple mb-2 drop-shadow-sm">
-        {submission.hqTitle}
-      </h3>
-      <p className="text-lg mb-8 text-gray-300 flex items-center">
-        Status Atual: 
-        <span className="ml-3 font-bold px-4 py-1 bg-zilion-cyan/20 text-zilion-cyan border border-zilion-cyan rounded-full shadow-neon-cyan text-sm tracking-wider">
-          {submission.etapaCerne.toUpperCase()}
-        </span>
-      </p>
-
-      <h4 className="font-semibold mb-6 text-gray-400 uppercase tracking-widest text-sm border-b border-gray-800 pb-2">
-        Linha do Tempo (Pipeline CERNE)
-      </h4>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white/5 p-8 rounded-2xl shadow-lg border border-white/10 relative overflow-hidden backdrop-blur-sm"
+    >
+      <div className="absolute top-0 right-0 w-32 h-32 bg-zilion-gold-500/10 rounded-full blur-[40px] pointer-events-none"></div>
       
-      {/* Container da Timeline */}
-      <div className="relative pl-4 border-l-2 border-zilion-purple/50 ml-2">
-        {submission.etapaPipeline.map((stage, index) => (
-          <div key={index} className="mb-8 relative group">
-            {/* Bolinha na timeline */}
-            <div className="absolute -left-[21px] top-1 w-4 h-4 bg-zilion-bg rounded-full border-2 border-zilion-cyan group-hover:bg-zilion-cyan group-hover:shadow-neon-cyan transition-all duration-300"></div>
-            
-            <div className="ml-6 transition-transform duration-300 group-hover:translate-x-1">
-              <p className="font-bold text-lg text-gray-100 group-hover:text-zilion-cyan transition-colors">
-                {stage.etapa.replace(/_/g, ' ').toUpperCase()}
-              </p>
-              <p className="text-xs text-gray-500 font-mono">{formatDate(stage.data)}</p>
-            </div>
+      <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+        <span className="w-2 h-8 bg-zilion-gold-500 mr-3 rounded-full"></span>
+        Meu Projeto Atual
+      </h2>
+      
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-200">{titulo}</h3>
+          <p className="text-sm text-gray-400">{genero}</p>
+        </div>
+
+        <div className="relative pt-4">
+          <div className="flex justify-between text-sm mb-2 font-medium text-gray-400">
+            <span>Progresso da Incubação</span>
+            <span className="text-zilion-gold-500">{progresso}%</span>
           </div>
-        ))}
-        {/* Marcador de "Próximas Etapas" */}
-         <div className="relative">
-            <div className="absolute -left-[21px] top-1 w-4 h-4 bg-gray-800 rounded-full border-2 border-gray-600"></div>
-            <div className="ml-6">
-                <p className="font-bold text-md text-gray-600 tracking-wider">PRÓXIMAS ETAPAS</p>
-            </div>
+          <div className="w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
+            <div 
+              className="bg-gradient-to-r from-zilion-gold-400 to-zilion-gold-600 h-2.5 rounded-full shadow-[0_0_10px_rgba(212,175,55,0.3)]" 
+              style={{ width: `${progresso}%` }}
+            ></div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mt-6">
+           <div className="bg-black/40 p-4 rounded-xl border border-white/5">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Fase Atual</p>
+              <p className="text-white font-bold">{faseAtual}</p>
+           </div>
+           <div className="bg-black/40 p-4 rounded-xl border border-white/5">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Próximo Deadline</p>
+              <p className="text-white font-bold">{proximoDeadline}</p>
+           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

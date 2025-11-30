@@ -98,7 +98,7 @@ const EnviarFeedback: React.FC<EnviarFeedbackProps> = ({ submissionId }) => {
             <button
               type="submit"
               disabled={isSaving}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-bold uppercase tracking-widest rounded-md shadow-sm text-black bg-zilion-gold-500 hover:bg-zilion-gold-400 hover:shadow-[0_0_15px_rgba(212,175,55,0.4)] disabled:bg-gray-400 transition-all duration-300"
             >
               {isSaving ? 'Enviando...' : 'Enviar Feedback'}
             </button>
